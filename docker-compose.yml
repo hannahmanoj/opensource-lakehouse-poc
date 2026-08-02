@@ -38,5 +38,44 @@ services:
     depends_on:
       - iceberg-rest
 
+  spark-iceberg:
+    image: tabulario/spark-iceberg
+    container_name: spark-iceberg
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=admin12345
+      - AWS_REGION=us-east-1
+      - SPARK_HOME=/opt/spark
+    volumes:
+      - ./spark-apps:/opt/spark-apps
+    ports:
+      - "8888:8888"
+    depends_on:
+      - iceberg-rest
+      - minio
+
+  airflow:
+    image: apache/airflow:2.9.3
+    container_name: airflow
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    volumes:
+      - ./airflow-dags:/opt/airflow/dags
+      - ./spark-apps:/opt/airflow/spark-apps
+      - ./:/opt/airflow/project
+      - airflow-data:/opt/airflow
+    ports:
+      - "8090:8080"
+    command: >
+      bash -c "airflow db init &&
+      airflow users create --username admin --password admin --firstname A --lastname B --role Admin --email admin@example.com &&
+      airflow webserver & airflow scheduler"
+    depends_on:
+      - trino
+      - spark-iceberg
+
 volumes:
   minio-data:
+  airflow-data:
