@@ -31,6 +31,9 @@ services:
   trino:
     image: trinodb/trino
     container_name: trino
+    environment:
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: admin12345
     ports:
       - "8080:8080"
     volumes:
@@ -75,7 +78,32 @@ services:
     depends_on:
       - trino
       - spark-iceberg
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./:/data
 
+  nifi:
+    image: apache/nifi:1.28.1
+    container_name: nifi
+    ports:
+      - "8443:8443"
+    environment:
+      SINGLE_USER_CREDENTIALS_USERNAME: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: adminadminadmin123
+      NIFI_JVM_HEAP_INIT: 2g
+      NIFI_JVM_HEAP_MAX: 4g
+    volumes:
+      - ./nifi-drivers:/opt/nifi/nifi-current/drivers
+    depends_on:
+      - sqlserver
+      - minio
 volumes:
   minio-data:
   airflow-data:
