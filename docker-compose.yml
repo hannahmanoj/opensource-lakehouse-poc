@@ -1,4 +1,18 @@
 services:
+  portal:
+    build:
+      context: platform/portal
+    image: poc-lakehouse-portal:1.0
+    container_name: lakehouse-portal
+    ports:
+      - "3000:80"
+    depends_on:
+      - minio
+      - trino
+      - airflow
+      - nifi
+    restart: unless-stopped
+
   minio:
     image: quay.io/minio/minio
     container_name: minio
@@ -79,7 +93,7 @@ services:
     command: >
       bash -c "airflow db migrate &&
       (airflow users create --username admin --password admin --firstname A --lastname B --role Admin --email admin@example.com || true) &&
-      (airflow webserver & exec airflow scheduler)"
+      (airflow webserver --pid /tmp/airflow-webserver.pid & exec airflow scheduler)"
     depends_on:
       - trino
       - spark-iceberg

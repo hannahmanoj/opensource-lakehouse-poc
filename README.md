@@ -46,11 +46,18 @@ Service endpoints:
 
 | Service | URL | Credentials |
 |---|---|---|
+| Lakehouse Portal | http://localhost:3000 | none |
 | Airflow | http://localhost:8090 | `admin` / `admin` |
 | Trino | http://localhost:8080 | no authentication (POC only) |
 | MinIO API | http://localhost:9000 | configured in `.env` |
 | MinIO Console | http://localhost:9001 | configured in `.env` |
 | NiFi | https://localhost:8443 | configured in Compose |
+
+The **Madayn Lakehouse Portal** is the recommended entry point for the demo. It
+shows platform health, explains the role of each component, and opens every
+tool without requiring users to remember individual ports. When accessed from
+another computer, its links automatically use the same host name or IP address
+as the portal.
 
 ## Primary demonstration
 
