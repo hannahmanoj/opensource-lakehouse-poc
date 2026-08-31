@@ -1,4 +1,6 @@
 import csv
+from pathlib import Path
+
 import trino
 
 conn = trino.dbapi.connect(
@@ -10,7 +12,9 @@ conn = trino.dbapi.connect(
 )
 cur = conn.cursor()
 
-with open("artists.csv", newline="", encoding="utf-8") as f:
+source = Path(__file__).resolve().parents[1] / "data" / "artists.csv"
+
+with source.open(newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f)
     for row in reader:
         cur.execute(
@@ -41,4 +45,4 @@ with open("artists.csv", newline="", encoding="utf-8") as f:
             ],
         )
 
-print("Done loading artists.csv into iceberg.demo.artists")
+print(f"Done loading {source} into iceberg.demo.artists")

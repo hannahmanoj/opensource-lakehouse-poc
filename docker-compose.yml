@@ -37,7 +37,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./trino-catalog:/etc/trino/catalog
+      - ./platform/trino/catalog:/etc/trino/catalog:ro
     depends_on:
       - iceberg-rest
 
@@ -50,7 +50,7 @@ services:
       - AWS_REGION=us-east-1
       - SPARK_HOME=/opt/spark
     volumes:
-      - ./spark-apps:/opt/spark-apps
+      - ./domains:/opt/project/domains:ro
       - ./data:/opt/data
     ports:
       - "8888:8888"
@@ -61,7 +61,7 @@ services:
   airflow:
     build:
       context: .
-      dockerfile: airflow/Dockerfile
+      dockerfile: platform/docker/airflow/Dockerfile
     image: poc-lakehouse-airflow:2.9.3
     container_name: airflow
     environment:
@@ -69,9 +69,9 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     volumes:
-      - ./airflow-dags:/opt/airflow/dags
-      - ./spark-apps:/opt/airflow/spark-apps
-      - ./:/opt/airflow/project
+      - ./domains/demo-artists/dags:/opt/airflow/dags/demo-artists:ro
+      - ./domains/industrial-energy/dags:/opt/airflow/dags/industrial-energy:ro
+      - ./data:/opt/airflow/project/data
       - airflow-data:/opt/airflow
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
@@ -105,7 +105,7 @@ services:
       NIFI_JVM_HEAP_INIT: 2g
       NIFI_JVM_HEAP_MAX: 4g
     volumes:
-      - ./nifi-drivers:/opt/nifi/nifi-current/drivers
+      - ./platform/nifi/drivers:/opt/nifi/nifi-current/drivers:ro
     depends_on:
       - sqlserver
       - minio

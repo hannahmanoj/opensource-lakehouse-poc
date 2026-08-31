@@ -91,7 +91,8 @@ with DAG(
         task_id="land_raw_csv_in_minio",
         bash_command=(
             "docker exec spark-iceberg spark-submit "
-            "/opt/spark-apps/upload_energy_raw.py --date {{ ds }}"
+            "/opt/project/domains/industrial-energy/spark/upload_energy_raw.py "
+            "--date {{ ds }}"
         ),
     )
 
@@ -99,7 +100,7 @@ with DAG(
         task_id="transform_and_publish_iceberg",
         bash_command=(
             "docker exec spark-iceberg spark-submit "
-            "/opt/spark-apps/transform_energy.py"
+            "/opt/project/domains/industrial-energy/spark/transform_energy.py"
         ),
         execution_timeout=timedelta(minutes=20),
     )
