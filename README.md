@@ -1,6 +1,6 @@
 # On-Premises Lakehouse POC
 
-This repository demonstrates a vendor-neutral, on-premises data lakehouse using
+This repo demonstrates a vendor-neutral, on-premises data lakehouse using
 MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, and Power BI.
 
 ### Lakehouse operations portal
@@ -40,7 +40,7 @@ Sources -> NiFi/Airflow -> MinIO + Iceberg -> Spark -> Trino -> Power BI
 Each domain owns its orchestration, transformation logic, tests, contracts, and
 documentation. Shared infrastructure remains under `platform/`.
 
-## Start the POC
+## To start the POC
 
 ```bash
 docker compose up -d --build
@@ -57,7 +57,7 @@ Service endpoints:
 | MinIO Console | http://localhost:9001 | configured in `.env` |
 | NiFi | https://localhost:8443 | configured in Compose |
 
-The **Madayn Lakehouse Portal** is the recommended entry point for the demo. It
+The **Lakehouse Portal** is the recommended entry point for the demo. It
 shows platform health, explains the role of each component, and opens every
 tool without requiring users to remember individual ports. When accessed from
 another computer, its links automatically use the same host name or IP address
@@ -88,7 +88,7 @@ for the detailed demo flow.
 
 ## POC versus production
 
-This repository prioritizes a clear single-machine demonstration. A production
+This repository prioritises a clear single-machine demonstration. A production
 deployment should use separate development, test, and production environments;
 external secret management; TLS and identity-based access; PostgreSQL for
 Airflow metadata; highly available services; immutable job images; and a
