@@ -3,6 +3,10 @@
 This repository demonstrates a vendor-neutral, on-premises data lakehouse using
 MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, and Power BI.
 
+### Lakehouse operations portal
+
+![Madayn Lakehouse operations portal](platform/portal/src/portal-snap.png)
+
 ## Architecture
 
 ```text
@@ -58,6 +62,7 @@ shows platform health, explains the role of each component, and opens every
 tool without requiring users to remember individual ports. When accessed from
 another computer, its links automatically use the same host name or IP address
 as the portal.
+
 
 ## Primary demonstration
 
