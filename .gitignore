@@ -1,2 +1,4 @@
 .env
+data/generated/
+__pycache__/
 yellow_tripdata_2016-01.csv

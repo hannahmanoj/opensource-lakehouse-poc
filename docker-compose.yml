@@ -51,6 +51,7 @@ services:
       - SPARK_HOME=/opt/spark
     volumes:
       - ./spark-apps:/opt/spark-apps
+      - ./data:/opt/data
     ports:
       - "8888:8888"
     depends_on:
@@ -58,7 +59,10 @@ services:
       - minio
 
   airflow:
-    image: apache/airflow:2.9.3
+    build:
+      context: .
+      dockerfile: airflow/Dockerfile
+    image: poc-lakehouse-airflow:2.9.3
     container_name: airflow
     environment:
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor
@@ -69,12 +73,13 @@ services:
       - ./spark-apps:/opt/airflow/spark-apps
       - ./:/opt/airflow/project
       - airflow-data:/opt/airflow
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8090:8080"
     command: >
-      bash -c "airflow db init &&
-      airflow users create --username admin --password admin --firstname A --lastname B --role Admin --email admin@example.com &&
-      airflow webserver & airflow scheduler"
+      bash -c "airflow db migrate &&
+      (airflow users create --username admin --password admin --firstname A --lastname B --role Admin --email admin@example.com || true) &&
+      (airflow webserver & exec airflow scheduler)"
     depends_on:
       - trino
       - spark-iceberg
