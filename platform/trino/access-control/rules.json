@@ -1,0 +1,76 @@
+{
+  "catalogs": [
+    {
+      "group": "platform_admins",
+      "catalog": ".*",
+      "allow": "all"
+    },
+    {
+      "group": "energy_analysts|transport_analysts|powerbi_service",
+      "catalog": "iceberg",
+      "allow": "read-only"
+    },
+    {
+      "catalog": ".*",
+      "allow": "none"
+    }
+  ],
+
+  "schemas": [
+    {
+      "group": "platform_admins",
+      "catalog": "iceberg",
+      "schema": ".*",
+      "owner": true
+    },
+    {
+      "catalog": "iceberg",
+      "schema": ".*",
+      "owner": false
+    }
+  ],
+
+  "tables": [
+    {
+      "group": "platform_admins",
+      "catalog": ".*",
+      "schema": ".*",
+      "table": ".*",
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE",
+        "UPDATE",
+        "OWNERSHIP"
+      ]
+    },
+    {
+      "group": "energy_analysts",
+      "catalog": "iceberg",
+      "schema": "demo",
+      "table": "industrial_energy_.*",
+      "privileges": ["SELECT"]
+    },
+    {
+      "group": "transport_analysts",
+      "catalog": "iceberg",
+      "schema": "demo",
+      "table": "taxi_.*",
+      "privileges": ["SELECT"]
+    },
+    {
+      "group": "powerbi_service",
+      "catalog": "iceberg",
+      "schema": "demo",
+      "table": "industrial_energy_daily_summary|taxi_hourly_summary|genre_summary",
+      "privileges": ["SELECT"]
+    },
+    {
+      "catalog": ".*",
+      "schema": ".*",
+      "table": ".*",
+      "privileges": []
+    }
+    
+  ]
+}

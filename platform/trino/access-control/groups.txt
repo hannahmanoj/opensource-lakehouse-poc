@@ -1,0 +1,4 @@
+platform_admins:platform.admin,trino
+energy_analysts:energy.analyst
+transport_analysts:transport.analyst
+powerbi_service:powerbi
