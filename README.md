@@ -56,12 +56,28 @@ Service endpoints:
 | MinIO API | http://localhost:9000 | configured in `.env` |
 | MinIO Console | http://localhost:9001 | configured in `.env` |
 | NiFi | https://localhost:8443 | configured in Compose |
+| OpenMetadata | http://localhost:8585 | `admin` / `admin` (POC only) |
 
 The **Lakehouse Portal** is the recommended entry point for the demo. It
 shows platform health, explains the role of each component, and opens every
 tool without requiring users to remember individual ports. When accessed from
 another computer, its links automatically use the same host name or IP address
 as the portal.
+
+### Start the governance profile
+
+OpenMetadata is optional because its metadata database and search index require
+additional memory. Start it alongside the core platform with:
+
+```bash
+docker compose --profile governance up -d openmetadata-server openmetadata-ingestion
+```
+
+The first startup pulls the pinned OpenMetadata, ingestion, MySQL, and
+Elasticsearch images, runs the metadata schema migration, and can take several minutes. Open
+the governance catalog at <http://localhost:8585>. The bundled OpenMetadata
+ingestion scheduler runs internally to execute connector tests and metadata
+ingestion; the POC's existing Airflow remains responsible for business DAGs.
 
 
 ## Primary demonstration

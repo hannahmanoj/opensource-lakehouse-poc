@@ -85,6 +85,7 @@ services:
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
     volumes:
       - ./domains/demo-artists/dags:/opt/airflow/dags/demo-artists:ro
       - ./domains/industrial-energy/dags:/opt/airflow/dags/industrial-energy:ro
@@ -126,6 +127,130 @@ services:
     depends_on:
       - sqlserver
       - minio
+
+  openmetadata-db:
+    profiles: ["governance"]
+    image: docker.getcollate.io/openmetadata/db:1.12.6
+    container_name: openmetadata-db
+    command: "--sort_buffer_size=10M"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - openmetadata-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql --user=root --password=$$MYSQL_ROOT_PASSWORD --silent --execute 'use openmetadata_db'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  openmetadata-search:
+    profiles: ["governance"]
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.3.0
+    container_name: openmetadata-search
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+      xpack.security.enabled: "false"
+    volumes:
+      - openmetadata-search-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health | grep -qE '\"status\":\"(green|yellow)\"'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  openmetadata-migrate:
+    profiles: ["governance"]
+    image: docker.getcollate.io/openmetadata/server:1.12.6
+    container_name: openmetadata-migrate
+    command: "./bootstrap/openmetadata-ops.sh migrate"
+    environment: &openmetadata-environment
+      OPENMETADATA_CLUSTER_NAME: madayn-lakehouse
+      AUTHENTICATION_PROVIDER: basic
+      AUTHENTICATION_PUBLIC_KEYS: "[http://localhost:8585/api/v1/system/config/jwks]"
+      AUTHORIZER_ADMIN_PRINCIPALS: "[admin]"
+      AUTHORIZER_INGESTION_PRINCIPALS: "[ingestion-bot]"
+      PIPELINE_SERVICE_CLIENT_ENABLED: "false"
+      DB_DRIVER_CLASS: com.mysql.cj.jdbc.Driver
+      DB_SCHEME: mysql
+      DB_PARAMS: allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DB_USER: openmetadata_user
+      DB_USER_PASSWORD: openmetadata_password
+      DB_HOST: openmetadata-db
+      DB_PORT: "3306"
+      OM_DATABASE: openmetadata_db
+      SEARCH_TYPE: elasticsearch
+      ELASTICSEARCH_HOST: openmetadata-search
+      ELASTICSEARCH_PORT: "9200"
+      ELASTICSEARCH_SCHEME: http
+      SERVER_HOST_API_URL: http://openmetadata-server:8585/api
+      OPENMETADATA_HEAP_OPTS: -Xms1g -Xmx1g
+    depends_on:
+      openmetadata-db:
+        condition: service_healthy
+      openmetadata-search:
+        condition: service_healthy
+    restart: "no"
+
+  openmetadata-server:
+    profiles: ["governance"]
+    image: docker.getcollate.io/openmetadata/server:1.12.6
+    container_name: openmetadata-server
+    restart: unless-stopped
+    environment:
+      <<: *openmetadata-environment
+      PIPELINE_SERVICE_CLIENT_ENABLED: "true"
+      PIPELINE_SERVICE_CLIENT_ENDPOINT: http://openmetadata-ingestion:8080
+    ports:
+      - "8585:8585"
+    depends_on:
+      openmetadata-db:
+        condition: service_healthy
+      openmetadata-search:
+        condition: service_healthy
+      openmetadata-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8586/healthcheck"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+
+  openmetadata-ingestion:
+    profiles: ["governance"]
+    image: docker.getcollate.io/openmetadata/ingestion:1.12.6
+    container_name: openmetadata-ingestion
+    restart: unless-stopped
+    entrypoint: /bin/bash
+    command: ["/opt/airflow/ingestion_dependency.sh"]
+    environment:
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__OPENMETADATA_AIRFLOW_APIS__DAG_GENERATED_CONFIGS: /opt/airflow/dag_generated_configs
+      DB_HOST: openmetadata-db
+      DB_PORT: "3306"
+      AIRFLOW_DB: airflow_db
+      DB_SCHEME: mysql+mysqldb
+      DB_USER: airflow_user
+      DB_PASSWORD: airflow_pass
+    volumes:
+      - openmetadata-ingestion-configs:/opt/airflow/dag_generated_configs
+      - openmetadata-ingestion-dags:/opt/airflow/dags
+      - openmetadata-ingestion-tmp:/tmp
+    depends_on:
+      openmetadata-db:
+        condition: service_healthy
+      openmetadata-server:
+        condition: service_started
 volumes:
   minio-data:
   airflow-data:
+  openmetadata-db-data:
+  openmetadata-search-data:
+  openmetadata-ingestion-configs:
+  openmetadata-ingestion-dags:
+  openmetadata-ingestion-tmp:
