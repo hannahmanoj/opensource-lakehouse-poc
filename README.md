@@ -44,6 +44,13 @@ documentation. shared infrastructure remains under `platform/`.
 
 ## to start the POC
 
+create a local credentials file and replace every `change-me` value before
+starting the services. `.env` is intentionally excluded from git:
+
+```bash
+cp .env.example .env
+```
+
 ```bash
 docker compose up -d --build
 ```
@@ -53,11 +60,11 @@ service endpoints:
 | service | url | credentials |
 |---|---|---|
 | lakehouse portal | http://localhost:3000 | none |
-| airflow | http://localhost:8090 | `admin` / `admin` |
+| airflow | http://localhost:8090 | configured in `.env` |
 | trino | http://localhost:8080 | no authentication (poc only) |
 | minIO API | http://localhost:9000 | configured in `.env` |
 | minIO console | http://localhost:9001 | configured in `.env` |
-| nifi | https://localhost:8443 | configured in compose |
+| nifi | https://localhost:8443 | configured in `.env` |
 | openMetaData | http://localhost:8585 | `admin` / `admin` (poc only) |
 
 the **lakehouse portal** is the recommended entry point for the demo.

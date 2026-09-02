@@ -36,8 +36,8 @@ services:
       CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
       CATALOG_S3_ENDPOINT: http://minio:9000
       CATALOG_S3_PATH__STYLE__ACCESS: "true"
-      AWS_ACCESS_KEY_ID: admin
-      AWS_SECRET_ACCESS_KEY: admin12345
+      AWS_ACCESS_KEY_ID: ${LAKEHOUSE_AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${LAKEHOUSE_AWS_SECRET_ACCESS_KEY}
       AWS_REGION: us-east-1
     depends_on:
       - minio
@@ -46,8 +46,8 @@ services:
     image: trinodb/trino
     container_name: trino
     environment:
-      AWS_ACCESS_KEY_ID: admin
-      AWS_SECRET_ACCESS_KEY: admin12345
+      AWS_ACCESS_KEY_ID: ${LAKEHOUSE_AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${LAKEHOUSE_AWS_SECRET_ACCESS_KEY}
     ports:
       - "8080:8080"
     volumes:
@@ -63,8 +63,8 @@ services:
     image: tabulario/spark-iceberg
     container_name: spark-iceberg
     environment:
-      - AWS_ACCESS_KEY_ID=admin
-      - AWS_SECRET_ACCESS_KEY=admin12345
+      - AWS_ACCESS_KEY_ID=${LAKEHOUSE_AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${LAKEHOUSE_AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=us-east-1
       - SPARK_HOME=/opt/spark
     volumes:
@@ -78,8 +78,7 @@ services:
 
   airflow:
     build:
-      context: .
-      dockerfile: platform/docker/airflow/Dockerfile
+      context: platform/docker/airflow
     image: poc-lakehouse-airflow:2.9.3
     container_name: airflow
     environment:
@@ -87,6 +86,9 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
+      AIRFLOW_ADMIN_USERNAME: ${AIRFLOW_ADMIN_USERNAME}
+      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+      AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL}
     volumes:
       - ./domains/demo-artists/dags:/opt/airflow/dags/demo-artists:ro
       - ./domains/industrial-energy/dags:/opt/airflow/dags/industrial-energy:ro
@@ -97,7 +99,7 @@ services:
       - "8090:8080"
     command: >
       bash -c "airflow db migrate &&
-      (airflow users create --username admin --password admin --firstname A --lastname B --role Admin --email admin@example.com || true) &&
+      (airflow users create --username "$${AIRFLOW_ADMIN_USERNAME}" --password "$${AIRFLOW_ADMIN_PASSWORD}" --firstname A --lastname B --role Admin --email "$${AIRFLOW_ADMIN_EMAIL}" || true) &&
       (airflow webserver --pid /tmp/airflow-webserver.pid & exec airflow scheduler)"
     depends_on:
       - trino
@@ -107,7 +109,7 @@ services:
     container_name: sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
@@ -119,8 +121,8 @@ services:
     ports:
       - "8443:8443"
     environment:
-      SINGLE_USER_CREDENTIALS_USERNAME: admin
-      SINGLE_USER_CREDENTIALS_PASSWORD: adminadminadmin123
+      SINGLE_USER_CREDENTIALS_USERNAME: ${NIFI_SINGLE_USER_USERNAME}
+      SINGLE_USER_CREDENTIALS_PASSWORD: ${NIFI_SINGLE_USER_PASSWORD}
       NIFI_JVM_HEAP_INIT: 2g
       NIFI_JVM_HEAP_MAX: 4g
     volumes:
@@ -136,11 +138,12 @@ services:
     command: "--sort_buffer_size=10M"
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_USER: ${OPENMETADATA_MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${OPENMETADATA_MYSQL_ROOT_PASSWORD}
     volumes:
       - openmetadata-db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysql --user=root --password=$$MYSQL_ROOT_PASSWORD --silent --execute 'use openmetadata_db'"]
+      test: ["CMD-SHELL", "mysql --user=$$MYSQL_ROOT_USER --password=$$MYSQL_ROOT_PASSWORD --silent --execute 'use openmetadata_db'"]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -171,14 +174,14 @@ services:
       OPENMETADATA_CLUSTER_NAME: madayn-lakehouse
       AUTHENTICATION_PROVIDER: basic
       AUTHENTICATION_PUBLIC_KEYS: "[http://localhost:8585/api/v1/system/config/jwks]"
-      AUTHORIZER_ADMIN_PRINCIPALS: "[admin]"
-      AUTHORIZER_INGESTION_PRINCIPALS: "[ingestion-bot]"
+      AUTHORIZER_ADMIN_PRINCIPALS: "[${OPENMETADATA_ADMIN_PRINCIPAL}]"
+      AUTHORIZER_INGESTION_PRINCIPALS: "[${OPENMETADATA_INGESTION_PRINCIPAL}]"
       PIPELINE_SERVICE_CLIENT_ENABLED: "false"
       DB_DRIVER_CLASS: com.mysql.cj.jdbc.Driver
       DB_SCHEME: mysql
       DB_PARAMS: allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DB_USER: openmetadata_user
-      DB_USER_PASSWORD: openmetadata_password
+      DB_USER: ${OPENMETADATA_DB_USER}
+      DB_USER_PASSWORD: ${OPENMETADATA_DB_PASSWORD}
       DB_HOST: openmetadata-db
       DB_PORT: "3306"
       OM_DATABASE: openmetadata_db
@@ -236,8 +239,8 @@ services:
       DB_PORT: "3306"
       AIRFLOW_DB: airflow_db
       DB_SCHEME: mysql+mysqldb
-      DB_USER: airflow_user
-      DB_PASSWORD: airflow_pass
+      DB_USER: ${OPENMETADATA_INGESTION_DB_USER}
+      DB_PASSWORD: ${OPENMETADATA_INGESTION_DB_PASSWORD}
     volumes:
       - openmetadata-ingestion-configs:/opt/airflow/dag_generated_configs
       - openmetadata-ingestion-dags:/opt/airflow/dags
