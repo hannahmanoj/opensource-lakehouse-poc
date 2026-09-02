@@ -52,13 +52,13 @@ service endpoints:
 
 | service | url | credentials |
 |---|---|---|
-| lakehouse Portal | http://localhost:3000 | none |
+| lakehouse portal | http://localhost:3000 | none |
 | airflow | http://localhost:8090 | `admin` / `admin` |
-| trino | http://localhost:8080 | no authentication (POC only) |
+| trino | http://localhost:8080 | no authentication (poc only) |
 | minIO API | http://localhost:9000 | configured in `.env` |
 | minIO console | http://localhost:9001 | configured in `.env` |
-| NiFi | https://localhost:8443 | configured in compose |
-| openMetadata | http://localhost:8585 | `admin` / `admin` (POC only) |
+| nifi | https://localhost:8443 | configured in compose |
+| openMetaData | http://localhost:8585 | `admin` / `admin` (poc only) |
 
 the **lakehouse portal** is the recommended entry point for the demo.
 it shows platform health, explains the role of each component, and opens every
@@ -66,23 +66,24 @@ tool without requiring users to remember individual ports
 
 ### start the governance profile
 
-openMetadata is optional because its metadata database and search index require
-additional memory. Start it alongside the core platform with:
+openMetaData is optional because its metadata database and search index require
+additional memory
+
+ Start it alongside the core platform with:
 
 ```bash
 docker compose --profile governance up -d openmetadata-server openmetadata-ingestion
 ```
 
-the first startup pulls the pinned OpenMetadata, ingestion, MySQL, and
-Elasticsearch images, runs the metadata schema migration, and can take several minutes. Open the governance catalog at <http://localhost:8585>. The bundled OpenMetadata
-ingestion scheduler runs internally to execute connector tests and metadata
-ingestion; the POC's existing airflow remains responsible for business DAGs.
+the first startup pulls the pinned openMetaData, ingestion, MySQL, and
+elasticsearch images, runs the metadata schema migration, and can take several minutes
 
+the bundled openMetaData ingestion scheduler runs internally to execute connector tests and metadata ingestion; the poc's existing airflow remains responsible for business DAGs
 
 ## demo
 
 the `industrial_energy_lakehouse_pipeline` airflow DAG runs daily at 06:00
-asia/muscat and performs:
+asia/muscat and executes:
 
 ![energy airflow dag](platform/portal/src/energy_dag.png)
 
