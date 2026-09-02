@@ -1,6 +1,6 @@
 # industrial energy data product
 
-this domain is one of the primary Airflow automation demonstration. It simulates hourly energy telemetry for five industrial cities and publishes analytics-ready
+this domain is one of the airflow automation demonstration. It simulates hourly energy telemetry for five industrial cities and publishes analytics-ready
 iceberg tables
 
 ## contents
