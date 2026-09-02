@@ -33,15 +33,3 @@ iceberg.demo.industrial_energy_daily_summary
 
 the landing job dynamically overwrites the scheduled date partition, making a
 retry safe and preventing duplicate records
-
-## demo
-
-1. open Airflow at http://localhost:8090.
-2. select `industrial_energy_lakehouse_pipeline`
-3. show the Graph view and explain the task dependencies
-4. trigger the DAG or show the latest successful scheduled run
-5. open task logs to demonstrate auditability and retries
-6. query `industrial_energy_daily_summary` through trino or power bi
-
-the generated readings are synthetic and intended only for demonstrating the
-platform workflow
