@@ -1,0 +1,62 @@
+{
+  "contractVersion": "1.0.0",
+  "dataProduct": "nyc-taxi-trips",
+  "domain": "transport",
+  "owner": "transport-data-team",
+  "sourceSystem": "MadaynTest.dbo.taxi_trips",
+  "description": "Contract for the source-shaped, cleaned, and hourly NYC taxi Iceberg tables.",
+  "tables": {
+    "raw": {
+      "name": "iceberg.raw.taxi_trips",
+      "requiredColumns": {
+        "VendorID": "int",
+        "tpep_pickup_datetime": "string",
+        "tpep_dropoff_datetime": "string",
+        "passenger_count": "int",
+        "trip_distance": "double",
+        "payment_type": "int",
+        "fare_amount": "double",
+        "total_amount": "double"
+      }
+    },
+    "clean": {
+      "name": "iceberg.demo.taxi_trips_clean",
+      "requiredColumns": {
+        "tpep_pickup_datetime": "timestamp",
+        "tpep_dropoff_datetime": "timestamp",
+        "passenger_count": "int",
+        "trip_distance": "double",
+        "fare_amount": "double",
+        "total_amount": "double",
+        "trip_duration_minutes": "double",
+        "fare_per_mile": "double",
+        "pickup_hour": "int",
+        "pickup_day_of_week": "int",
+        "is_peak_hour": "boolean"
+      }
+    },
+    "summary": {
+      "name": "iceberg.demo.taxi_hourly_summary",
+      "grain": ["pickup_hour", "pickup_day_of_week", "is_peak_hour"],
+      "requiredColumns": {
+        "pickup_hour": "int",
+        "pickup_day_of_week": "int",
+        "is_peak_hour": "boolean",
+        "avg_duration_minutes": "double",
+        "trip_count": "bigint",
+        "avg_total_amount": "double",
+        "avg_trip_distance": "double"
+      }
+    }
+  },
+  "quality": {
+    "minimumRawRows": 1,
+    "maximumRejectedRowRatio": 0.1,
+    "maximumApproximateDuplicateRatio": 0.02,
+    "minimumTripDurationMinutes": 0.0,
+    "maximumTripDurationMinutes": 1440.0,
+    "minimumFarePerMile": 0.0,
+    "minimumSummaryRows": 1,
+    "maximumSummaryRows": 168
+  }
+}

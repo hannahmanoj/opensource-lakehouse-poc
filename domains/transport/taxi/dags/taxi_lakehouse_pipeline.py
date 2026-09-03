@@ -202,7 +202,17 @@ with DAG(
         bash_command=(
             "docker exec trino trino --user platform.admin --catalog iceberg "
             "--schema demo --execute \""
-            "SELECT IF(count(*) > 0, true, fail('taxi_trips_clean is empty')) "
+            "SELECT IF("
+            "count(*) > 0 "
+            "AND count_if(tpep_pickup_datetime IS NULL) = 0 "
+            "AND count_if(tpep_dropoff_datetime IS NULL) = 0 "
+            "AND count_if(trip_distance <= 0) = 0 "
+            "AND count_if(fare_amount <= 0) = 0 "
+            "AND count_if(trip_duration_minutes < 0 OR trip_duration_minutes > 1440) = 0 "
+            "AND count_if(fare_per_mile < 0) = 0 "
+            "AND count_if(pickup_hour NOT BETWEEN 0 AND 23) = 0 "
+            "AND count_if(pickup_day_of_week NOT BETWEEN 1 AND 7) = 0, "
+            "true, fail('taxi_trips_clean contract check failed')) "
             "FROM taxi_trips_clean\""
         ),
     )
@@ -212,7 +222,10 @@ with DAG(
         bash_command=(
             "docker exec trino trino --user platform.admin --catalog iceberg "
             "--schema raw --execute \""
-            "SELECT IF(count(*) > 0, true, fail('raw taxi table is empty')) "
+            "SELECT IF(count(*) > 0 "
+            "AND count_if(tpep_pickup_datetime IS NULL) = 0 "
+            "AND count_if(tpep_dropoff_datetime IS NULL) = 0, "
+            "true, fail('raw taxi table contract check failed')) "
             "FROM taxi_trips\""
         ),
     )
@@ -222,7 +235,13 @@ with DAG(
         bash_command=(
             "docker exec trino trino --user platform.admin --catalog iceberg "
             "--schema demo --execute \""
-            "SELECT IF(count(*) > 0, true, fail('taxi_hourly_summary is empty')) "
+            "SELECT IF(count(*) BETWEEN 1 AND 168 "
+            "AND count(*) = count(DISTINCT ROW(pickup_hour, pickup_day_of_week, is_peak_hour)) "
+            "AND count_if(pickup_hour NOT BETWEEN 0 AND 23) = 0 "
+            "AND count_if(pickup_day_of_week NOT BETWEEN 1 AND 7) = 0 "
+            "AND count_if(trip_count <= 0) = 0 "
+            "AND sum(trip_count) = (SELECT count(*) FROM taxi_trips_clean), "
+            "true, fail('taxi_hourly_summary contract check failed')) "
             "FROM taxi_hourly_summary\""
         ),
     )
