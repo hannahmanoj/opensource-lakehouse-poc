@@ -89,9 +89,18 @@ services:
       AIRFLOW_ADMIN_USERNAME: ${AIRFLOW_ADMIN_USERNAME}
       AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
       AIRFLOW_ADMIN_EMAIL: ${AIRFLOW_ADMIN_EMAIL}
+      NIFI_API_URL: ${NIFI_API_URL}
+      NIFI_SINGLE_USER_USERNAME: ${NIFI_SINGLE_USER_USERNAME}
+      NIFI_SINGLE_USER_PASSWORD: ${NIFI_SINGLE_USER_PASSWORD}
+      NIFI_TAXI_PROCESS_GROUP_ID: ${NIFI_TAXI_PROCESS_GROUP_ID}
+      NIFI_TAXI_QUERY_PROCESSOR_ID: ${NIFI_TAXI_QUERY_PROCESSOR_ID}
+      NIFI_TAXI_S3_PROCESSOR_ID: ${NIFI_TAXI_S3_PROCESSOR_ID}
+      LAKEHOUSE_AWS_ACCESS_KEY_ID: ${LAKEHOUSE_AWS_ACCESS_KEY_ID}
+      LAKEHOUSE_AWS_SECRET_ACCESS_KEY: ${LAKEHOUSE_AWS_SECRET_ACCESS_KEY}
     volumes:
       - ./domains/demo-artists/dags:/opt/airflow/dags/demo-artists:ro
       - ./domains/industrial-energy/dags:/opt/airflow/dags/industrial-energy:ro
+      - ./domains/transport/taxi/dags:/opt/airflow/dags/transport-taxi:ro
       - ./data:/opt/airflow/project/data
       - airflow-data:/opt/airflow
       - /var/run/docker.sock:/var/run/docker.sock
@@ -123,6 +132,7 @@ services:
     environment:
       SINGLE_USER_CREDENTIALS_USERNAME: ${NIFI_SINGLE_USER_USERNAME}
       SINGLE_USER_CREDENTIALS_PASSWORD: ${NIFI_SINGLE_USER_PASSWORD}
+      NIFI_WEB_PROXY_HOST: "localhost:8443,nifi:8443"
       NIFI_JVM_HEAP_INIT: 2g
       NIFI_JVM_HEAP_MAX: 4g
     volumes:

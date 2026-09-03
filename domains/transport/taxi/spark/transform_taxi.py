@@ -1,3 +1,5 @@
+import os
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
     col, unix_timestamp, hour, dayofweek, when, round as spark_round
@@ -17,17 +19,17 @@ spark = (
     .config("spark.sql.defaultCatalog", "iceberg")
     .config("spark.sql.iceberg.vectorization.enabled", "false")
     .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
-    .config("spark.hadoop.fs.s3a.access.key", "admin")
-    .config("spark.hadoop.fs.s3a.secret.key", "admin12345")
+    .config("spark.hadoop.fs.s3a.access.key", os.environ["AWS_ACCESS_KEY_ID"])
+    .config("spark.hadoop.fs.s3a.secret.key", os.environ["AWS_SECRET_ACCESS_KEY"])
     .config("spark.hadoop.fs.s3a.path.style.access", "true")
     .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
     .config("spark.sql.legacy.timeParserPolicy", "LEGACY")
     .getOrCreate()
 )
 
-print("Step 1: Reading raw CSV files from MinIO...")
+print("Step 1: Reading raw Avro landing files from MinIO...")
 
-raw = (
+raw_landing = (
     spark.read
     .format("avro")
     .load("s3a://lakehouse/raw/taxi_trips/")
@@ -35,15 +37,21 @@ raw = (
 
 from pyspark.sql.functions import to_timestamp
 
-raw = raw.withColumn(
+raw_count = raw_landing.count()
+print(f"Raw landing row count: {raw_count}")
+
+print("Step 2: Publishing the source-shaped raw Iceberg table...")
+spark.sql("CREATE NAMESPACE IF NOT EXISTS iceberg.raw")
+raw_landing.writeTo("iceberg.raw.taxi_trips").createOrReplace()
+print("Done: iceberg.raw.taxi_trips created")
+
+raw = spark.table("iceberg.raw.taxi_trips").withColumn(
     "tpep_pickup_datetime", to_timestamp("tpep_pickup_datetime")
 ).withColumn(
     "tpep_dropoff_datetime", to_timestamp("tpep_dropoff_datetime")
 )
 
-print(f"Raw row count: {raw.count()}")
-
-print("Step 2: Cleaning invalid rows...")
+print("Step 3: Cleaning invalid rows...")
 
 clean = raw.filter(
     (col("fare_amount") > 0) &
@@ -52,9 +60,10 @@ clean = raw.filter(
     (col("tpep_dropoff_datetime") > col("tpep_pickup_datetime"))
 )
 
-print(f"Rows after cleaning: {clean.count()} (dropped {raw.count() - clean.count()})")
+clean_count = clean.count()
+print(f"Rows after cleaning: {clean_count} (dropped {raw_count - clean_count})")
 
-print("Step 3: Computing trip duration, fare-per-mile, peak-hour flag...")
+print("Step 4: Computing trip duration, fare-per-mile, peak-hour flag...")
 
 enriched = (
     clean
@@ -79,13 +88,13 @@ enriched = (
     )
 )
 
-print("Step 4: Writing enriched table to Iceberg...")
+print("Step 5: Writing enriched table to Iceberg...")
 
 enriched.writeTo("iceberg.demo.taxi_trips_clean").createOrReplace()
 
 print("Done: iceberg.demo.taxi_trips_clean created")
 
-print("Step 5: Building hourly summary aggregation...")
+print("Step 6: Building hourly summary aggregation...")
 
 summary = (
     enriched.groupBy("pickup_hour", "pickup_day_of_week", "is_peak_hour")
