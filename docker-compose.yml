@@ -1,4 +1,13 @@
 services:
+  copilot-api:
+    build:
+      context: platform/copilot/api
+    image: poc-lakehouse-copilot-api:0.1.0
+    container_name: copilot-api
+    ports:
+      - "8100:8100"
+    restart: unless-stopped
+    
   portal:
     build:
       context: platform/portal
