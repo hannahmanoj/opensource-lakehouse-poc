@@ -9,9 +9,12 @@ Classification = Literal["incident_diagnosis", "documentation_question", "operat
 
 Confidence = Literal["low", "medium", "high"]
 
+Severity = Literal["info", "warning", "error", "critical"]
+
 class CopilotRequest(BaseModel):
     question: str = Field(min_length=1, max_length=1000)
     component: Component | None = None
+    severity: Severity | None = None
     from_time: datetime | None = None
     to_time: datetime | None = None
 
@@ -25,9 +28,20 @@ class SearchResult(BaseModel):
     source_id: str
     title: str
     component: Component
+    severity: Severity
     excerpt: str
     source_uri: str
-    score: float
+    line_start: int | None
+    line_end: int | None
+
+    sematic_score: float | None
+    keyword_score: float | None
+    sematic_rank: int | None
+    keyword_rank: int | None
+    rrf_score: float
+
+    matched_by: list[Literal["semantic", "keyword"]]
+    why_ranked: str
 
 class SearchResponse(BaseModel):
     question: str
