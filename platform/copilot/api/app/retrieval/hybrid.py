@@ -170,3 +170,46 @@ def reciprocal_rank_fusion(
         key=lambda result: result["rrf_score"],
         reverse=True,
     )[:final_limit]
+
+def hybrid_search(
+    question: str,
+    component: str | None = None,
+    severity: str | None = None,
+    from_time: datetime | None = None,
+    to_time: datetime | None = None,
+    candidate_limit: int = 10,
+    final_limit: int = 5,
+) -> list[dict]:
+    question_embedding = embed_question(question)
+
+    filter_sql, filter_parameters = build_filters(
+        component=component,
+        severity=severity,
+        from_time=from_time,
+        to_time=to_time,
+    )
+
+    with psycopg.connect(DATABASE_URL) as connection:
+        register_vector(connection)
+
+        vector_results = vector_search(
+            connection=connection,
+            question_embedding=question_embedding,
+            filter_sql=filter_sql,
+            filter_parameters=filter_parameters,
+            limit=candidate_limit,
+        )
+
+        keyword_results = keyword_search(
+            connection=connection,
+            question=question,
+            filter_sql=filter_sql,
+            filter_parameters=filter_parameters,
+            limit=candidate_limit,
+        )
+
+    return reciprocal_rank_fusion(
+        vector_results=vector_results,
+        keyword_results=keyword_results,
+        final_limit=final_limit,
+    )
