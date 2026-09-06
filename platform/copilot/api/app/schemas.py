@@ -28,15 +28,15 @@ class SearchResult(BaseModel):
     source_id: str
     title: str
     component: Component
-    severity: Severity
+    severity: Severity | None
     excerpt: str
     source_uri: str
     line_start: int | None
     line_end: int | None
 
-    sematic_score: float | None
+    semantic_score: float | None
     keyword_score: float | None
-    sematic_rank: int | None
+    semantic_rank: int | None
     keyword_rank: int | None
     rrf_score: float
 

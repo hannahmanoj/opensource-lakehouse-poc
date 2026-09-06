@@ -4,6 +4,7 @@ from app.schemas import (
     CopilotResponse,
     SearchResponse,
 )
+from app.retrieval.hybrid import hybrid_search
 
 # creates the api application
 app = FastAPI(
@@ -23,10 +24,18 @@ async def health() -> dict[str, str]:
     "/api/copilot/search",
     response_model=SearchResponse,
 )
-async def search(request: CopilotRequest) -> SearchResponse:
+def search(request: CopilotRequest) -> SearchResponse:
+    results = hybrid_search(
+        question=request.question,
+        component=request.component,
+        severity=request.severity,
+        from_time=request.from_time,
+        to_time=request.to_time,
+    )
+
     return SearchResponse(
         question=request.question,
-        results=[]
+        results=results,
     )
 
 @app.post(
