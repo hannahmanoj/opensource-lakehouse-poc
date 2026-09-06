@@ -97,3 +97,76 @@ def keyword_search( connection, question: str, filter_sql: str, filter_parameter
     with connection.cursor(row_factory=dict_row) as cursor:
         cursor.execute(query, parameters)
         return cursor.fetchall()
+
+## combines the results of vector search and keyword search using reciprocal rank fusion (rrf) to produce a final ranked list of results
+def reciprocal_rank_fusion(
+    vector_results: list[dict],
+    keyword_results: list[dict],
+    final_limit: int = 5,
+    rrf_constant: int = 60,
+) -> list[dict]:
+    combined = {}
+
+    for rank, row in enumerate(vector_results, start=1):
+        source_id = str(row["id"])
+
+        combined[source_id] = {
+            **row,
+            "source_id": source_id,
+            "semantic_score": float(row["semantic_score"]),
+            "keyword_score": None,
+            "semantic_rank": rank,
+            "keyword_rank": None,
+            "rrf_score": 1 / (rrf_constant + rank),
+            "matched_by": ["semantic"],
+        }
+
+    for rank, row in enumerate(keyword_results, start=1):
+        source_id = str(row["id"])
+        contribution = 1 / (rrf_constant + rank)
+
+        if source_id in combined:
+            combined[source_id]["keyword_score"] = float(
+                row["keyword_score"]
+            )
+            combined[source_id]["keyword_rank"] = rank
+            combined[source_id]["rrf_score"] += contribution
+            combined[source_id]["matched_by"].append("keyword")
+        else:
+            combined[source_id] = {
+                **row,
+                "source_id": source_id,
+                "semantic_score": None,
+                "keyword_score": float(row["keyword_score"]),
+                "semantic_rank": None,
+                "keyword_rank": rank,
+                "rrf_score": contribution,
+                "matched_by": ["keyword"],
+            }
+
+    results = list(combined.values())
+
+    for result in results:
+        if len(result["matched_by"]) == 2:
+            result["why_ranked"] = (
+                "Matched both the question's meaning "
+                "and its exact keywords."
+            )
+        elif result["matched_by"] == ["semantic"]:
+            result["why_ranked"] = (
+                "Matched the meaning of the question."
+            )
+        else:
+            result["why_ranked"] = (
+                "Matched exact words from the question."
+            )
+
+        result["excerpt"] = result["content"][:800]
+        result.pop("content", None)
+        result.pop("id", None)
+
+    return sorted(
+        results,
+        key=lambda result: result["rrf_score"],
+        reverse=True,
+    )[:final_limit]
