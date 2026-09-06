@@ -1,2 +1,6 @@
 fastapi==0.141.1
 uvicorn==0.52.4
+psycopg[binary]
+pgvector
+PyYAML
+sentence-transformers

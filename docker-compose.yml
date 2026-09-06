@@ -14,6 +14,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    ports:
+      - "127.0.0.1:5433:5432"
     restart: unless-stopped
 
   copilot-api:
@@ -21,8 +23,19 @@ services:
       context: platform/copilot/api
     image: poc-lakehouse-copilot-api:0.1.0
     container_name: copilot-api
+    environment:
+      COPILOT_DATABASE_URL: ${COPILOT_DATABASE_URL}
+      COPILOT_KNOWLEDGE_PATH: /knowledge
+      COPILOT_EMBEDDING_MODEL: BAAI/bge-m3
+      HF_HOME: /home/copilot/.cache/huggingface
+    volumes:
+      - ./platform/copilot/knowledge:/knowledge:ro
+      - copilot-model-cache:/home/copilot/.cache/huggingface
     ports:
       - "8100:8100"
+    depends_on:
+      copilot-db:
+        condition: service_healthy
     restart: unless-stopped
 
   portal:
@@ -309,3 +322,4 @@ volumes:
   nifi-registry-database:
   nifi-registry-flow-storage:
   copilot-db-data:
+  copilot-model-cache:

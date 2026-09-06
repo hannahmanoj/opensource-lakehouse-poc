@@ -16,7 +16,9 @@ RUN pip install \
 #adds the application code to the image
 COPY app ./app
 
-RUN useradd --create-home --uid 10001 copilot
+RUN useradd --create-home --uid 10001 copilot \
+    && mkdir -p /home/copilot/.cache/huggingface \
+    && chown -R copilot:copilot /home/copilot
 
 USER copilot
 
