@@ -1,4 +1,21 @@
 services:
+  copilot-db:
+    image: pgvector/pgvector:0.8.6-pg16
+    container_name: copilot-db
+    environment:
+      POSTGRES_DB: ${COPILOT_DB_NAME}
+      POSTGRES_USER: ${COPILOT_DB_USER}
+      POSTGRES_PASSWORD: ${COPILOT_DB_PASSWORD}
+    volumes:
+      - copilot-db-data:/var/lib/postgresql/data
+      - ./platform/copilot/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   copilot-api:
     build:
       context: platform/copilot/api
@@ -7,7 +24,7 @@ services:
     ports:
       - "8100:8100"
     restart: unless-stopped
-    
+
   portal:
     build:
       context: platform/portal
@@ -291,3 +308,4 @@ volumes:
   openmetadata-ingestion-tmp:
   nifi-registry-database:
   nifi-registry-flow-storage:
+  copilot-db-data:
