@@ -4,3 +4,4 @@ psycopg[binary]
 pgvector
 PyYAML
 sentence-transformers
+httpx==0.28.1

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -54,3 +54,18 @@ class CopilotResponse(BaseModel):
     confidence: Confidence
     insufficient_evidence: bool
     citations: list[Citation]
+
+
+class IcebergEvidenceRequest(BaseModel):
+    table: str = Field(min_length=1, max_length=300)
+    operation: Literal["files", "snapshots", "table_health"]
+
+
+class LiveEvidenceResponse(BaseModel):
+    source: Literal[
+        "airflow",
+        "trino",
+        "iceberg",
+        "platform_health",
+    ]
+    evidence: Any
