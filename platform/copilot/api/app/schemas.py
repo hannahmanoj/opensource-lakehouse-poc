@@ -26,9 +26,11 @@ class Citation(BaseModel):
 
 class SearchResult(BaseModel):
     source_id: str
+    source_type: str
     title: str
     component: Component
     severity: Severity | None
+    occurred_at: datetime | None
     excerpt: str
     source_uri: str
     line_start: int | None
@@ -53,6 +55,7 @@ class CopilotResponse(BaseModel):
     answer: str
     confidence: Confidence
     insufficient_evidence: bool
+    missing_evidence: list[str] = Field(default_factory=list)
     citations: list[Citation]
 
 

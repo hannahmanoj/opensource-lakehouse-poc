@@ -1,9 +1,30 @@
 {
+  "system_information": [
+    {
+      "user": "copilot",
+      "allow": ["read"]
+    },
+    {
+      "user": "platform\\.admin|trino",
+      "allow": ["read", "write"]
+    }
+  ],
+
   "catalogs": [
     {
       "group": "platform_admins",
       "catalog": ".*",
       "allow": "all"
+    },
+    {
+      "group": "copilot_observers",
+      "catalog": "system",
+      "allow": "read-only"
+    },
+    {
+      "group": "copilot_observers",
+      "catalog": "iceberg",
+      "allow": "read-only"
     },
     {
       "group": "energy_analysts|transport_analysts|powerbi_service",
@@ -45,6 +66,20 @@
       ]
     },
     {
+      "group": "copilot_observers",
+      "catalog": "system",
+      "schema": "runtime",
+      "table": "nodes|queries",
+      "privileges": ["SELECT"]
+    },
+    {
+      "group": "copilot_observers",
+      "catalog": "iceberg",
+      "schema": "demo",
+      "table": "industrial_energy_daily_summary(\\$files|\\$snapshots)?|taxi_hourly_summary(\\$files|\\$snapshots)?",
+      "privileges": ["SELECT"]
+    },
+    {
       "group": "energy_analysts",
       "catalog": "iceberg",
       "schema": "demo",
@@ -71,6 +106,5 @@
       "table": ".*",
       "privileges": []
     }
-    
   ]
 }

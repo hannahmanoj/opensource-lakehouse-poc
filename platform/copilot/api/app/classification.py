@@ -42,6 +42,7 @@ OPERATIONAL_CHECKLIST_KEYWORDS = {
 }
 
 INCIDENT_KEYWORDS = {
+    "fail",
     "failed",
     "failure",
     "error",

@@ -10,6 +10,13 @@ class ClassificationTests(unittest.TestCase):
 
         self.assertEqual(result, "incident_diagnosis")
 
+    def test_incident_diagnosis_with_fail(self):
+        result = classify_question(
+            "Why did the Spark ingestion fail?"
+        )
+
+        self.assertEqual(result, "incident_diagnosis")
+
     def test_documentation_question(self):
         result = classify_question(
             "What is an Apache Iceberg snapshot?"

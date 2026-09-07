@@ -9,6 +9,7 @@ from app.collectors.iceberg import IcebergCollector
 from app.collectors.platform_health import PlatformHealthCollector
 from app.collectors.trino import TrinoCollector
 from app.retrieval.hybrid import hybrid_search
+from app.retrieval.sufficiency import evaluate_sufficiency
 from app.schemas import (
     CopilotRequest,
     CopilotResponse,
@@ -59,12 +60,57 @@ def search(request: CopilotRequest) -> SearchResponse:
 def ask(request: CopilotRequest) -> CopilotResponse:
     classification = classify_question(request.question)
 
+    results = hybrid_search(
+        question=request.question,
+        component=request.component,
+        severity=request.severity,
+        from_time=request.from_time,
+        to_time=request.to_time,
+    )
+
+    decision = evaluate_sufficiency(
+        classification=classification,
+        results=results,
+        requested_component=request.component,
+        date_requested=(
+            request.from_time is not None
+            or request.to_time is not None
+        ),
+    )
+
+    if not decision.sufficient:
+        missing = ", ".join(decision.missing_evidence)
+
+        return CopilotResponse(
+            classification=classification,
+            answer=(
+                "I cannot answer safely because I am missing: "
+                f"{missing}."
+            ),
+            confidence="low",
+            insufficient_evidence=True,
+            missing_evidence=decision.missing_evidence,
+            citations=[],
+        )
+
     return CopilotResponse(
         classification=classification,
-        answer="",
-        confidence="low",
+        answer=(
+            "The evidence is sufficient for answer generation. "
+            "LLM generation is not connected yet."
+        ),
+        confidence=decision.confidence,
         insufficient_evidence=False,
-        citations=[],
+        missing_evidence=[],
+        citations=[
+            {
+                "source_id": result["source_id"],
+                "title": result["title"],
+                "source_uri": result["source_uri"],
+                "excerpt": result["excerpt"],
+            }
+            for result in decision.qualified_evidence
+        ],
     )
 
 

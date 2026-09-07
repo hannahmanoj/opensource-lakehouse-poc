@@ -1,4 +1,4 @@
-# Lakehouse Operations Copilot: Two-Day Build and Learning Plan
+# lakehouse operations copilot: Build and Learning Plan
 
 ## 1. Goal
 

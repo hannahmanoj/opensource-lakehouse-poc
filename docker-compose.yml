@@ -28,7 +28,15 @@ services:
       COPILOT_KNOWLEDGE_PATH: /knowledge
       COPILOT_EMBEDDING_MODEL: BAAI/bge-m3
       HF_HOME: /home/copilot/.cache/huggingface
+      COPILOT_AIRFLOW_URL: http://airflow:8080
+      COPILOT_AIRFLOW_USERNAME: ${AIRFLOW_ADMIN_USERNAME}
+      COPILOT_AIRFLOW_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+      COPILOT_TRINO_URL: http://trino:8080
+      COPILOT_TRINO_USER: copilot
+      COPILOT_MAX_LOG_BYTES: ${COPILOT_MAX_LOG_BYTES:-32768}
+      COPILOT_SMALL_FILE_THRESHOLD_BYTES: ${COPILOT_SMALL_FILE_THRESHOLD_BYTES:-134217728}
     volumes:
+      - ./platform/copilot/api/app:/app/app:ro
       - ./platform/copilot/knowledge:/knowledge:ro
       - copilot-model-cache:/home/copilot/.cache/huggingface
     ports:

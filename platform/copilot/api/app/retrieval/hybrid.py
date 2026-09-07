@@ -40,9 +40,11 @@ def build_filters( component: str | None, severity: str | None, from_time: datet
 def vector_search( connection, question_embedding, filter_sql: str, filter_parameters: list, limit: int = 10,) -> list[dict]:
     query = f"""
         SELECT id
+          , source_type
           , source_name
           , component
           , severity
+          , occurred_at
           , title
           , content
           , source_uri
@@ -69,9 +71,11 @@ def keyword_search( connection, question: str, filter_sql: str, filter_parameter
             SELECT plainto_tsquery('english', %s) AS query
         )
         SELECT id
+            , source_type
             , source_name
             , component
             , severity
+            , occurred_at
             , title
             , content
             , source_uri
