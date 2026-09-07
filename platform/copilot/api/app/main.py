@@ -5,6 +5,7 @@ from app.schemas import (
     SearchResponse,
 )
 from app.retrieval.hybrid import hybrid_search
+from app.classification import classify_question
 
 # creates the api application
 app = FastAPI(
@@ -25,6 +26,8 @@ async def health() -> dict[str, str]:
     response_model=SearchResponse,
 )
 def search(request: CopilotRequest) -> SearchResponse:
+    classification = classify_question(request.question)
+    
     results = hybrid_search(
         question=request.question,
         component=request.component,
@@ -35,6 +38,7 @@ def search(request: CopilotRequest) -> SearchResponse:
 
     return SearchResponse(
         question=request.question,
+        classification=classification,
         results=results,
     )
 
@@ -42,11 +46,13 @@ def search(request: CopilotRequest) -> SearchResponse:
     "/api/copilot/ask",
     response_model=CopilotResponse,
 )
-async def ask(request: CopilotRequest) -> CopilotResponse:
+def ask(request: CopilotRequest) -> CopilotResponse:
+    classification = classify_question(request.question)
+
     return CopilotResponse(
-        classification="incident_diagnosis",
+        classification=classification,
         answer="",
         confidence="low",
         insufficient_evidence=False,
-        citations=[]
+        citations=[],
     )

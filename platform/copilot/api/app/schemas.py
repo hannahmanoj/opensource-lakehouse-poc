@@ -45,6 +45,7 @@ class SearchResult(BaseModel):
 
 class SearchResponse(BaseModel):
     question: str
+    classification: Classification
     results: list[SearchResult]
 
 class CopilotResponse(BaseModel):
