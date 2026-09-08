@@ -1,0 +1,245 @@
+[
+  {
+    "id": "spark-duration-001",
+    "category": "incident_diagnosis",
+    "question": "Why did the taxi Spark ingestion fail?",
+    "component": "spark",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["spark-invalid-trip-duration"],
+    "expected_facts": ["The maximum allowed trip duration is 1440 minutes."],
+    "should_abstain": true
+  },
+  {
+    "id": "spark-duration-002",
+    "category": "incident_diagnosis",
+    "question": "What caused the DATA_CONTRACT_VIOLATION in the Spark taxi transformation?",
+    "component": "spark",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["spark-invalid-trip-duration"],
+    "expected_facts": ["A source trip appeared to last approximately 83 days."],
+    "should_abstain": true
+  },
+  {
+    "id": "nifi-duplicate-001",
+    "category": "incident_diagnosis",
+    "question": "Why did the NiFi taxi batch fail the duplicate-ratio check?",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["nifi-duplicate-batch"],
+    "expected_facts": ["QueryDatabaseTable ran more than once for the same source range."],
+    "should_abstain": true
+  },
+  {
+    "id": "nifi-duplicate-002",
+    "category": "incident_diagnosis",
+    "question": "Why were 44 Avro objects written when the taxi load expected 22?",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["nifi-duplicate-batch"],
+    "expected_facts": ["The same batch was extracted and uploaded twice."],
+    "should_abstain": true
+  },
+  {
+    "id": "iceberg-metadata-001",
+    "category": "incident_diagnosis",
+    "question": "Why did Iceberg report that 00001.metadata.json was not found?",
+    "component": "iceberg",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["iceberg-missing-metadata"],
+    "expected_facts": ["Landing files and Iceberg metadata originally shared the same path."],
+    "should_abstain": true
+  },
+  {
+    "id": "iceberg-metadata-002",
+    "category": "incident_diagnosis",
+    "question": "What caused the Iceberg catalog to reference missing metadata?",
+    "component": "iceberg",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["iceberg-missing-metadata"],
+    "expected_facts": ["Cleanup removed metadata while the catalog still referenced it."],
+    "should_abstain": true
+  },
+  {
+    "id": "trino-access-001",
+    "category": "incident_diagnosis",
+    "question": "Why did Trino return PERMISSION_DENIED for the Iceberg catalog?",
+    "component": "trino",
+    "expected_classification": "access_control",
+    "expected_source_ids": ["trino-catalog-access-denied"],
+    "expected_facts": ["The connected user's group lacked catalog permission."],
+    "should_abstain": false
+  },
+  {
+    "id": "trino-access-002",
+    "category": "incident_diagnosis",
+    "question": "Why could the Trino client connect but not list Iceberg schemas?",
+    "component": "trino",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": ["trino-catalog-access-denied"],
+    "expected_facts": ["This was an authorization failure, not a MinIO or network failure."],
+    "should_abstain": true
+  },
+  {
+    "id": "docs-duration-001",
+    "category": "documentation_question",
+    "question": "What is the maximum valid taxi trip duration in the data contract?",
+    "component": "spark",
+    "expected_classification": "documentation_question",
+    "expected_source_ids": ["spark-invalid-trip-duration"],
+    "expected_facts": ["The maximum is 1440 minutes."],
+    "should_abstain": false
+  },
+  {
+    "id": "docs-watermark-001",
+    "category": "documentation_question",
+    "question": "Explain why an incremental watermark prevents duplicate NiFi batches.",
+    "expected_classification": "documentation_question",
+    "expected_source_ids": ["nifi-duplicate-batch"],
+    "expected_facts": ["It prevents the same source range from being extracted again."],
+    "should_abstain": false
+  },
+  {
+    "id": "docs-paths-001",
+    "category": "documentation_question",
+    "question": "What is the difference between a raw landing path and an Iceberg-managed table path?",
+    "component": "iceberg",
+    "expected_classification": "documentation_question",
+    "expected_source_ids": ["iceberg-missing-metadata"],
+    "expected_facts": ["Separating the paths protects Iceberg metadata from landing cleanup."],
+    "should_abstain": false
+  },
+  {
+    "id": "docs-permission-001",
+    "category": "documentation_question",
+    "question": "What is a Trino catalog authorization failure?",
+    "component": "trino",
+    "expected_classification": "access_control",
+    "expected_source_ids": ["trino-catalog-access-denied"],
+    "expected_facts": ["The user or group is not permitted to access the catalog."],
+    "should_abstain": false
+  },
+  {
+    "id": "docs-minio-health-001",
+    "category": "documentation_question",
+    "question": "Explain what the MinIO health check tells an operator.",
+    "component": "minio",
+    "expected_classification": "documentation_question",
+    "expected_source_ids": ["minio-restart-checklist"],
+    "expected_facts": ["It helps determine whether MinIO itself is unavailable."],
+    "should_abstain": false
+  },
+  {
+    "id": "ops-minio-001",
+    "category": "operational_checklist",
+    "question": "What should I check before restarting MinIO?",
+    "component": "minio",
+    "expected_classification": "operational_checklist",
+    "expected_source_ids": ["minio-restart-checklist"],
+    "expected_facts": ["Check health, logs, disk, active writes, and persistent volume attachment."],
+    "should_abstain": false
+  },
+  {
+    "id": "ops-minio-002",
+    "category": "operational_checklist",
+    "question": "How do I safely investigate MinIO connection refused errors?",
+    "component": "minio",
+    "expected_classification": "operational_checklist",
+    "expected_source_ids": ["minio-restart-checklist"],
+    "expected_facts": ["Collect evidence and rule out networking, credentials, and paths before restarting."],
+    "should_abstain": false
+  },
+  {
+    "id": "ops-minio-003",
+    "category": "operational_checklist",
+    "question": "What should I check when S3Exception appears in lakehouse jobs?",
+    "component": "minio",
+    "expected_classification": "operational_checklist",
+    "expected_source_ids": ["minio-restart-checklist"],
+    "expected_facts": ["Check MinIO health, credentials, paths, disk, and dependent services."],
+    "should_abstain": false
+  },
+  {
+    "id": "ops-minio-004",
+    "category": "operational_checklist",
+    "question": "Give me the pre-check for a safe MinIO restart.",
+    "component": "minio",
+    "expected_classification": "operational_checklist",
+    "expected_source_ids": ["minio-restart-checklist"],
+    "expected_facts": ["Confirm no Spark or Iceberg commit is running."],
+    "should_abstain": false
+  },
+  {
+    "id": "table-health-001",
+    "category": "table_health",
+    "question": "Which Iceberg tables may have too many small files?",
+    "component": "iceberg",
+    "expected_classification": "table_health",
+    "expected_source_ids": ["iceberg-small-files"],
+    "expected_facts": ["Inspect file count, average size, and files below the configured threshold."],
+    "should_abstain": false
+  },
+  {
+    "id": "table-health-002",
+    "category": "table_health",
+    "question": "How should I assess Iceberg file count and average file size?",
+    "component": "iceberg",
+    "expected_classification": "table_health",
+    "expected_source_ids": ["iceberg-small-files"],
+    "expected_facts": ["Query the Iceberg $files metadata table."],
+    "should_abstain": false
+  },
+  {
+    "id": "table-health-003",
+    "category": "table_health",
+    "question": "When might Iceberg compaction be useful?",
+    "component": "iceberg",
+    "expected_classification": "table_health",
+    "expected_source_ids": ["iceberg-small-files"],
+    "expected_facts": ["Compaction may help when many undersized files affect query behavior."],
+    "should_abstain": false
+  },
+  {
+    "id": "missing-kafka-001",
+    "category": "missing_evidence",
+    "question": "Why did the production Kafka broker fail this morning?",
+    "expected_classification": "incident_diagnosis",
+    "expected_source_ids": [],
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "missing-delta-001",
+    "category": "missing_evidence",
+    "question": "What is the retention policy for our Delta Lake tables?",
+    "expected_classification": "documentation_question",
+    "expected_source_ids": [],
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "missing-database-001",
+    "category": "missing_evidence",
+    "question": "What should I check before restarting the production customer database?",
+    "expected_classification": "operational_checklist",
+    "expected_source_ids": [],
+    "expected_facts": [],
+    "should_abstain": true
+  },
+  {
+    "id": "misleading-access-001",
+    "category": "misleading_evidence",
+    "question": "Does a Trino PERMISSION_DENIED error prove that MinIO is offline?",
+    "component": "trino",
+    "expected_classification": "access_control",
+    "expected_source_ids": ["trino-catalog-access-denied"],
+    "expected_facts": ["No; permission denial is authorization evidence, not proof of a MinIO outage."],
+    "should_abstain": false
+  },
+  {
+    "id": "missing-arabic-001",
+    "category": "missing_evidence",
+    "question": "ما سبب فشل خدمة كافكا في بيئة الإنتاج؟",
+    "expected_classification": "unknown",
+    "expected_source_ids": [],
+    "expected_facts": [],
+    "should_abstain": true
+  }
+]

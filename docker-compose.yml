@@ -42,6 +42,8 @@ services:
       COPILOT_LLM_TIMEOUT_SECONDS: ${COPILOT_LLM_TIMEOUT_SECONDS:-120}
     volumes:
       - ./platform/copilot/api/app:/app/app:ro
+      - ./platform/copilot/api/tests:/app/tests:ro
+      - ./platform/copilot/evaluation:/evaluation
       - ./platform/copilot/knowledge:/knowledge:ro
       - copilot-model-cache:/home/copilot/.cache/huggingface
     ports:

@@ -1,0 +1,840 @@
+{
+  "generated_at": "2026-09-08T04:43:16.558691+00:00",
+  "api_url": "http://localhost:8100",
+  "question_count": 25,
+  "category_counts": {
+    "documentation_question": 5,
+    "incident_diagnosis": 8,
+    "misleading_evidence": 1,
+    "missing_evidence": 4,
+    "operational_checklist": 4,
+    "table_health": 3
+  },
+  "retrieval": {
+    "recall_at_5": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "evaluated_questions": 21
+  },
+  "classification_accuracy": 0.72,
+  "citation_validity": 1.0,
+  "abstention_accuracy": 0.72,
+  "details": [
+    {
+      "id": "spark-duration-001",
+      "category": "incident_diagnosis",
+      "classification": "incident_diagnosis",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "spark-invalid-trip-duration"
+      ],
+      "expected_source_ids": [
+        "spark-invalid-trip-duration"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "I cannot answer safely because I am missing: Spark timestamped log.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": true,
+      "abstention_correct": true,
+      "citation_ids": [],
+      "citation_valid": true,
+      "expected_facts": [
+        "The maximum allowed trip duration is 1440 minutes."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "spark-duration-002",
+      "category": "incident_diagnosis",
+      "classification": "unknown",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "spark-invalid-trip-duration"
+      ],
+      "expected_source_ids": [
+        "spark-invalid-trip-duration"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The DATA_CONTRACT_VIOLATION in the Spark taxi transformation was caused by at least one source record claiming a taxi trip lasted approximately 83 days (which is significantly longer than the allowed maximum of 1440 minutes). The transformation initially checked that drop-off occurred after pickup but did not reject durations longer than 24 hours, leading to the violation.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": true,
+      "abstention_correct": false,
+      "citation_ids": [
+        "fecf3fdd-673f-4c06-a96f-67a156ef4d7f"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "A source trip appeared to last approximately 83 days."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "nifi-duplicate-001",
+      "category": "incident_diagnosis",
+      "classification": "incident_diagnosis",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "nifi-duplicate-batch",
+        "iceberg-missing-metadata",
+        "spark-invalid-trip-duration",
+        "trino-catalog-access-denied",
+        "minio-restart-checklist"
+      ],
+      "expected_source_ids": [
+        "nifi-duplicate-batch"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "I cannot answer safely because I am missing: Relevant timestamped log.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": true,
+      "abstention_correct": true,
+      "citation_ids": [],
+      "citation_valid": true,
+      "expected_facts": [
+        "QueryDatabaseTable ran more than once for the same source range."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "nifi-duplicate-002",
+      "category": "incident_diagnosis",
+      "classification": "unknown",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "nifi-duplicate-batch",
+        "spark-invalid-trip-duration",
+        "iceberg-missing-metadata",
+        "trino-catalog-access-denied",
+        "iceberg-small-files"
+      ],
+      "expected_source_ids": [
+        "nifi-duplicate-batch"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The taxi raw-data quality check failed because NiFi loaded the taxi batch twice, resulting in 44 Avro objects instead of the expected 22. The root cause was that the QueryDatabaseTable processor ran more than once against the same source range, extracting approximately 10.9 million rows and creating another 22-file batch. This happened because the processor did not have a reliable incremental watermark or batch identifier to prevent the same source records from being uploaded again.",
+      "confidence": "high",
+      "abstained": false,
+      "should_abstain": true,
+      "abstention_correct": false,
+      "citation_ids": [
+        "ce688e7f-b5b6-42df-bfe4-cd16e13a4584",
+        "fecf3fdd-673f-4c06-a96f-67a156ef4d7f"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "The same batch was extracted and uploaded twice."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "iceberg-metadata-001",
+      "category": "incident_diagnosis",
+      "classification": "incident_diagnosis",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "iceberg-missing-metadata",
+        "iceberg-small-files"
+      ],
+      "expected_source_ids": [
+        "iceberg-missing-metadata"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "I cannot answer safely because I am missing: Iceberg timestamped log.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": true,
+      "abstention_correct": true,
+      "citation_ids": [],
+      "citation_valid": true,
+      "expected_facts": [
+        "Landing files and Iceberg metadata originally shared the same path."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "iceberg-metadata-002",
+      "category": "incident_diagnosis",
+      "classification": "unknown",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "iceberg-missing-metadata",
+        "iceberg-small-files"
+      ],
+      "expected_source_ids": [
+        "iceberg-missing-metadata"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The Iceberg catalog referenced missing metadata because the NiFi raw landing prefix and the Iceberg-managed table initially used the same MinIO path. When landing files were cleaned up, the Iceberg metadata under the same path was also removed, leaving the catalog referencing metadata that no longer existed.",
+      "confidence": "high",
+      "abstained": false,
+      "should_abstain": true,
+      "abstention_correct": false,
+      "citation_ids": [
+        "2e81a9df-0885-4210-8204-5996dabf3932",
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Cleanup removed metadata while the catalog still referenced it."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "trino-access-001",
+      "category": "incident_diagnosis",
+      "classification": "access_control",
+      "expected_classification": "access_control",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [
+        "trino-catalog-access-denied"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "Trino returned PERMISSION_DENIED for the Iceberg catalog because the access-control rules did not grant the connected user or group permission to access the iceberg catalog. This was an authorization failure, not a network or MinIO failure. The recommended checks include confirming the Trino username, checking the user's group, verifying the group file loading, inspecting the catalog access rule, confirming the rule permits the iceberg catalog, and testing with SHOW SCHEMAS FROM iceberg.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "74cc8ee1-dbe2-4a36-bc6e-61076c896feb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "The connected user's group lacked catalog permission."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "trino-access-002",
+      "category": "incident_diagnosis",
+      "classification": "unknown",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [
+        "trino-catalog-access-denied"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The Trino client could connect but not list Iceberg schemas because the Trino access-control rules did not grant the connected user or group permission to access the iceberg catalog. This was an authorization failure, not a network or MinIO failure. The root cause was the lack of proper permissions for the user or group to access the Iceberg catalog.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": true,
+      "abstention_correct": false,
+      "citation_ids": [
+        "74cc8ee1-dbe2-4a36-bc6e-61076c896feb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "This was an authorization failure, not a MinIO or network failure."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "docs-duration-001",
+      "category": "documentation_question",
+      "classification": "documentation_question",
+      "expected_classification": "documentation_question",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "spark-invalid-trip-duration"
+      ],
+      "expected_source_ids": [
+        "spark-invalid-trip-duration"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The maximum valid taxi trip duration in the data contract is 1440 minutes.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "fecf3fdd-673f-4c06-a96f-67a156ef4d7f"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "The maximum is 1440 minutes."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "docs-watermark-001",
+      "category": "documentation_question",
+      "classification": "documentation_question",
+      "expected_classification": "documentation_question",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "nifi-duplicate-batch",
+        "minio-restart-checklist",
+        "iceberg-missing-metadata",
+        "spark-invalid-trip-duration",
+        "iceberg-small-files"
+      ],
+      "expected_source_ids": [
+        "nifi-duplicate-batch"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "An incremental watermark prevents duplicate NiFi batches by tracking the progress of data ingestion and ensuring that each batch of data is processed only once. Without a reliable incremental watermark, the same source records can be extracted and uploaded multiple times, leading to duplicate data. For example, in the case of the taxi raw-data quality check failure, the QueryDatabaseTable processor ran more than once against the same source range, resulting in duplicate batches. The absence of a proper watermark or batch identifier allowed the same records to be processed again, causing the duplicate ratio to exceed the acceptable threshold. The incremental watermark acts as a marker to indicate the last processed position, thereby preventing the reprocessing of already ingested data and ensuring data consistency and integrity in the pipeline.",
+      "confidence": "high",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e",
+        "ce688e7f-b5b6-42df-bfe4-cd16e13a4584"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "It prevents the same source range from being extracted again."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "docs-paths-001",
+      "category": "documentation_question",
+      "classification": "documentation_question",
+      "expected_classification": "documentation_question",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "iceberg-missing-metadata",
+        "iceberg-small-files"
+      ],
+      "expected_source_ids": [
+        "iceberg-missing-metadata"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "A raw landing path is a location where data is initially stored before being processed, while an Iceberg-managed table path is a location where structured data is stored with metadata managed by Iceberg. The raw landing path is typically used for unprocessed data, whereas the Iceberg-managed table path is used for structured data with metadata that Iceberg manages. The two paths should be different to avoid issues like metadata loss or conflicts, as using the same path can lead to problems such as the metadata being deleted when data is cleaned up from the raw landing path.",
+      "confidence": "high",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "2e81a9df-0885-4210-8204-5996dabf3932",
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Separating the paths protects Iceberg metadata from landing cleanup."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "docs-permission-001",
+      "category": "documentation_question",
+      "classification": "incident_diagnosis",
+      "expected_classification": "access_control",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [
+        "trino-catalog-access-denied"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "I cannot answer safely because I am missing: Trino timestamped log.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": false,
+      "abstention_correct": false,
+      "citation_ids": [],
+      "citation_valid": true,
+      "expected_facts": [
+        "The user or group is not permitted to access the catalog."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "docs-minio-health-001",
+      "category": "documentation_question",
+      "classification": "documentation_question",
+      "expected_classification": "documentation_question",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "minio-restart-checklist"
+      ],
+      "expected_source_ids": [
+        "minio-restart-checklist"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The MinIO health check informs an operator about the status of the MinIO container and helps identify potential issues that might prevent services like Spark, Trino, Iceberg, or NiFi from accessing object storage. It checks for problems such as an unhealthy MinIO container, Docker networking issues, incorrect S3 credentials, missing buckets or objects, or stale connections from dependent services. These checks are essential before restarting MinIO to ensure that the issue is not related to MinIO itself but rather to other factors affecting its accessibility.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "8a577a97-cb6e-4be6-9515-cf17892143eb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "It helps determine whether MinIO itself is unavailable."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "ops-minio-001",
+      "category": "operational_checklist",
+      "classification": "operational_checklist",
+      "expected_classification": "operational_checklist",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "minio-restart-checklist"
+      ],
+      "expected_source_ids": [
+        "minio-restart-checklist"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "Before restarting MinIO, you should check the following:\n1. The MinIO container status.\n2. Recent MinIO logs.\n3. Disk availability.\n4. Confirm that the S3 credentials are correct.\n5. Ensure that the bucket or object path exists.\n6. Check if there are any stale connections from dependent services like Spark, Trino, Iceberg, or NiFi.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "8a577a97-cb6e-4be6-9515-cf17892143eb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Check health, logs, disk, active writes, and persistent volume attachment."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "ops-minio-002",
+      "category": "operational_checklist",
+      "classification": "operational_checklist",
+      "expected_classification": "operational_checklist",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "minio-restart-checklist"
+      ],
+      "expected_source_ids": [
+        "minio-restart-checklist"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "To safely investigate MinIO connection refused errors, follow these recommended checks:\n\n1. Check the MinIO container status to ensure it is running and healthy.\n2. Review recent MinIO logs for any errors or warnings that might indicate the root cause.\n3. Verify disk availability on the MinIO server, as insufficient disk space can lead to connection issues.\n4. Confirm that the S3 credentials configured in your services (such as Spark, Trino, Iceberg, or NiFi) are correct and valid.\n5. Ensure that the bucket or object path being accessed exists and is accessible.\n6. Check if Iceberg references are pointing to deleted metadata, which could cause connection issues.\n7. Investigate if a dependent service has stale connections to MinIO, which might require restarting the service or clearing the connection pool.\n\nThese steps can help identify whether the issue lies with MinIO itself or with the configuration or dependencies of the services using it.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "8a577a97-cb6e-4be6-9515-cf17892143eb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Collect evidence and rule out networking, credentials, and paths before restarting."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "ops-minio-003",
+      "category": "operational_checklist",
+      "classification": "operational_checklist",
+      "expected_classification": "operational_checklist",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "minio-restart-checklist"
+      ],
+      "expected_source_ids": [
+        "minio-restart-checklist"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "When an S3Exception appears in lakehouse jobs, you should check the following:\n\n1. The MinIO container status.\n2. Recent MinIO logs.\n3. Disk availability.\n4. S3 credentials configuration.\n5. Existence of the bucket or object path.\n6. Iceberg references for deleted metadata.\n7. Network connectivity and Docker networking for resolving MinIO.\n8. Stale connections in dependent services.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "8a577a97-cb6e-4be6-9515-cf17892143eb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Check MinIO health, credentials, paths, disk, and dependent services."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "ops-minio-004",
+      "category": "operational_checklist",
+      "classification": "unknown",
+      "expected_classification": "operational_checklist",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "minio-restart-checklist"
+      ],
+      "expected_source_ids": [
+        "minio-restart-checklist"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "To ensure a safe MinIO restart, perform the following pre-checks:\n\n1. Check the MinIO container status to confirm it is healthy.\n2. Review recent MinIO logs for any errors or warnings that might indicate issues.\n3. Verify disk availability to ensure there is sufficient space for operations.\n4. Confirm that the MinIO service is not experiencing any network-related issues, such as Docker networking problems or inability to resolve the MinIO service.\n5. Ensure that the S3 credentials configured for dependent services (like Spark, Trino, Iceberg, or NiFi) are correct and valid.\n6. Validate that the required buckets or object paths exist and are accessible.\n7. Check if any dependent services have stale connections and ensure they are properly reconnected or reconfigured if necessary.\n\nThese checks help identify potential issues before restarting MinIO and ensure a smooth restart process.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "8a577a97-cb6e-4be6-9515-cf17892143eb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Confirm no Spark or Iceberg commit is running."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "table-health-001",
+      "category": "table_health",
+      "classification": "table_health",
+      "expected_classification": "table_health",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "iceberg-small-files",
+        "iceberg-missing-metadata"
+      ],
+      "expected_source_ids": [
+        "iceberg-small-files"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "The Iceberg tables that may have too many small files are those where the average file size is low, and a high number of files are below 16 MB. The specific table mentioned in the evidence is `iceberg.demo.\"taxi_trips_clean$files\"`. However, the evidence does not provide a list of all such tables, so further analysis is needed to identify other tables with similar issues.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": false,
+      "abstention_correct": false,
+      "citation_ids": [
+        "2e81a9df-0885-4210-8204-5996dabf3932",
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Inspect file count, average size, and files below the configured threshold."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "table-health-002",
+      "category": "table_health",
+      "classification": "table_health",
+      "expected_classification": "table_health",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "iceberg-small-files",
+        "iceberg-missing-metadata"
+      ],
+      "expected_source_ids": [
+        "iceberg-small-files"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "To assess Iceberg file count and average file size, you should execute the SQL query provided in the evidence to inspect the Iceberg metadata table. The query is:\n\n```sql\nSELECT\n    count(*) AS file_count,\n    avg(file_size_in_bytes) AS average_file_size,\n    count_if(file_size_in_bytes < 16777216) AS files_below_16_mb\nFROM iceberg.demo.\"taxi_trips_clean$files\";\n```\n\nThis query will return the total file count, average file size, and the count of files below 16 MB. A high number or percentage of files below 16 MB indicates that compaction may be useful. Adjust the threshold based on your production workload. Additionally, ensure that the Iceberg catalog references valid metadata locations and that landing and managed-table locations are distinct to avoid issues with missing metadata.",
+      "confidence": "high",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "2e81a9df-0885-4210-8204-5996dabf3932",
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Query the Iceberg $files metadata table."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "table-health-003",
+      "category": "table_health",
+      "classification": "table_health",
+      "expected_classification": "table_health",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "iceberg-small-files",
+        "iceberg-missing-metadata"
+      ],
+      "expected_source_ids": [
+        "iceberg-small-files"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "Iceberg compaction may be useful when a table contains many small data files, which can lead to performance issues during queries. This typically occurs due to frequent micro-batches, excessive Spark partitions, small ingestion batches, or repeated writes. Compaction helps reduce the number of small files, improving query performance by minimizing the time spent opening and reading metadata. A high number or percentage of files below 16 MB indicates that compaction may be beneficial. The threshold for this can be adjusted based on the specific workload and requirements of the environment.",
+      "confidence": "high",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "2e81a9df-0885-4210-8204-5996dabf3932",
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "Compaction may help when many undersized files affect query behavior."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "missing-kafka-001",
+      "category": "missing_evidence",
+      "classification": "incident_diagnosis",
+      "expected_classification": "incident_diagnosis",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "iceberg-missing-metadata",
+        "nifi-duplicate-batch",
+        "spark-invalid-trip-duration",
+        "minio-restart-checklist",
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [],
+      "recall_at_5": null,
+      "reciprocal_rank": null,
+      "answer": "I cannot answer safely because I am missing: Relevant timestamped log.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": true,
+      "abstention_correct": true,
+      "citation_ids": [],
+      "citation_valid": true,
+      "expected_facts": [],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "missing-delta-001",
+      "category": "missing_evidence",
+      "classification": "access_control",
+      "expected_classification": "documentation_question",
+      "classification_correct": false,
+      "retrieved_sources": [
+        "iceberg-missing-metadata",
+        "spark-invalid-trip-duration",
+        "iceberg-small-files",
+        "nifi-duplicate-batch",
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [],
+      "recall_at_5": null,
+      "reciprocal_rank": null,
+      "answer": "I cannot answer safely because I am missing: Relevant knowledge-base evidence.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": true,
+      "abstention_correct": true,
+      "citation_ids": [],
+      "citation_valid": true,
+      "expected_facts": [],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "missing-database-001",
+      "category": "missing_evidence",
+      "classification": "operational_checklist",
+      "expected_classification": "operational_checklist",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "nifi-duplicate-batch",
+        "minio-restart-checklist",
+        "iceberg-missing-metadata",
+        "iceberg-small-files",
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [],
+      "recall_at_5": null,
+      "reciprocal_rank": null,
+      "answer": "Before restarting the production customer database, you should check the following:\n\n1. Ensure that all critical processes and services are properly stopped to avoid data inconsistency or corruption.\n2. Verify that there are no ongoing transactions or operations that could be affected by the restart.\n3. Confirm that backups are up to date and that you have a recovery plan in place.\n4. Check the health and status of dependent services, such as MinIO, Iceberg, and Trino, to ensure they are functioning correctly.\n5. Review any recent changes or updates to the database schema, configuration, or data to ensure they are compatible with the restart.\n6. Ensure that all necessary permissions and access controls are correctly configured for users and services that interact with the database.\n7. Validate that there are no unresolved errors or warnings in the system logs that could impact the restart.\n8. Confirm that the restart will not disrupt any scheduled tasks, jobs, or workflows that rely on the database.\n9. Ensure that the database is in a stable state and that there are no pending maintenance tasks or updates.\n10. Check for any specific recommendations related to the database system you are using, such as checking for duplicate data, verifying metadata locations, or ensuring proper connection configurations for external services like MinIO or Iceberg.",
+      "confidence": "low",
+      "abstained": true,
+      "should_abstain": true,
+      "abstention_correct": true,
+      "citation_ids": [
+        "2e81a9df-0885-4210-8204-5996dabf3932",
+        "4b62fa78-e8dc-4ed0-b6cb-82b02ee6075e",
+        "74cc8ee1-dbe2-4a36-bc6e-61076c896feb",
+        "8a577a97-cb6e-4be6-9515-cf17892143eb",
+        "ce688e7f-b5b6-42df-bfe4-cd16e13a4584"
+      ],
+      "citation_valid": true,
+      "expected_facts": [],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "misleading-access-001",
+      "category": "misleading_evidence",
+      "classification": "access_control",
+      "expected_classification": "access_control",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [
+        "trino-catalog-access-denied"
+      ],
+      "recall_at_5": 1.0,
+      "reciprocal_rank": 1.0,
+      "answer": "No, a Trino PERMISSION_DENIED error does not prove that MinIO is offline. The error indicates an authorization failure related to Trino access-control rules, not a network or MinIO failure.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": false,
+      "abstention_correct": true,
+      "citation_ids": [
+        "74cc8ee1-dbe2-4a36-bc6e-61076c896feb"
+      ],
+      "citation_valid": true,
+      "expected_facts": [
+        "No; permission denial is authorization evidence, not proof of a MinIO outage."
+      ],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    },
+    {
+      "id": "missing-arabic-001",
+      "category": "missing_evidence",
+      "classification": "unknown",
+      "expected_classification": "unknown",
+      "classification_correct": true,
+      "retrieved_sources": [
+        "nifi-duplicate-batch",
+        "spark-invalid-trip-duration",
+        "iceberg-missing-metadata",
+        "minio-restart-checklist",
+        "trino-catalog-access-denied"
+      ],
+      "expected_source_ids": [],
+      "recall_at_5": null,
+      "reciprocal_rank": null,
+      "answer": "The taxi raw-data quality check failed because NiFi uploaded 44 Avro objects instead of the expected 22 objects. The root cause was that QueryDatabaseTable ran more than once against the same source range, extracting approximately 10.9 million rows and creating another 22-file batch. The processor lacked a reliable incremental watermark or batch identifier, leading to duplicate uploads of the same source records.",
+      "confidence": "medium",
+      "abstained": false,
+      "should_abstain": true,
+      "abstention_correct": false,
+      "citation_ids": [
+        "ce688e7f-b5b6-42df-bfe4-cd16e13a4584"
+      ],
+      "citation_valid": true,
+      "expected_facts": [],
+      "manual_review": {
+        "correct": null,
+        "grounded": null,
+        "notes": "Review against expected_facts and cited passages."
+      }
+    }
+  ]
+}

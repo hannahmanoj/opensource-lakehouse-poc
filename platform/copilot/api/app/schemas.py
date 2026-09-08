@@ -3,7 +3,14 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-Component = Literal["airflow", "spark", "trino", "iceberg", "minio",]
+Component = Literal[
+    "airflow",
+    "spark",
+    "trino",
+    "iceberg",
+    "minio",
+    "nifi",
+]
 
 Classification = Literal["incident_diagnosis", "documentation_question", "operational_checklist", "table_health", "access_control", "unknown"]
 
