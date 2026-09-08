@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Madayn Lakehouse // Copilot</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="index.html"><img src="madayn-logo.png" alt="Madayn logo"><span>MADAYN<small>DATA LAKEHOUSE PORTAL</small></span></a>
+    <div class="head-meta"><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false"><span>☼</span> LIGHT</button><span class="env"><i></i> POC / LOCAL</span><time id="clock">--:--:-- GST</time></div>
+  </header>
+  <div class="shell">
+    <aside>
+      <nav><a href="index.html#overview">01&nbsp; OVERVIEW</a><a href="index.html#services">02&nbsp; SERVICES</a><a href="index.html#pipelines">03&nbsp; PIPELINES</a><a href="index.html#datasets">04&nbsp; DATASETS</a><a class="selected" href="copilot.html">05&nbsp; COPILOT</a></nav>
+      <section><label>ASSISTANT PROFILE</label><dl><div><dt>MODE</dt><dd>READ-ONLY</dd></div><div><dt>MODEL</dt><dd>QWEN3 8B</dd></div><div><dt>EVIDENCE</dt><dd>REQUIRED</dd></div><div><dt>ACTIONS</dt><dd>DISABLED</dd></div></dl></section>
+    </aside>
+    <main class="copilot-main">
+      <section class="page-head"><div><label>PLATFORM / COPILOT</label><h1>Operations Copilot</h1><p>Evidence-grounded diagnosis for the Madayn lakehouse.</p></div><span class="readonly-badge"><i></i> READ-ONLY</span></section>
+
+      <section class="copilot-layout">
+        <div class="copilot-query panel">
+          <div class="panel-title"><div><label>INVESTIGATION</label><h2>Ask a platform question</h2></div><code>LIVE + KNOWLEDGE</code></div>
+          <form id="copilot-form">
+            <label for="question">QUESTION</label>
+            <textarea id="question" name="question" maxlength="1000" required placeholder="What should I check before restarting MinIO?"></textarea>
+
+            <div class="filter-grid">
+              <div><label for="component">COMPONENT</label><select id="component"><option value="">All components</option><option value="airflow">Airflow</option><option value="spark">Spark</option><option value="trino">Trino</option><option value="iceberg">Iceberg</option><option value="minio">MinIO</option></select></div>
+              <div><label for="severity">SEVERITY</label><select id="severity"><option value="">All severities</option><option value="info">Info</option><option value="warning">Warning</option><option value="error">Error</option><option value="critical">Critical</option></select></div>
+              <div><label for="from-time">FROM</label><input id="from-time" type="datetime-local"></div>
+              <div><label for="to-time">TO</label><input id="to-time" type="datetime-local"></div>
+            </div>
+
+            <button class="ask-button" type="submit"><span>◎</span> ANALYZE EVIDENCE</button>
+          </form>
+
+          <div class="suggestions"><label>SUGGESTED DEMO QUESTIONS</label><div id="suggested-questions"><button type="button" data-component="spark">Why did the Spark ingestion fail?</button><button type="button" data-component="trino">What does this Trino permission error mean?</button><button type="button" data-component="iceberg">Which Iceberg tables have too many small files?</button><button type="button" data-component="minio">What should I check before restarting MinIO?</button></div></div>
+        </div>
+
+        <div id="result-column" class="result-column" aria-live="polite">
+          <section class="answer-panel panel empty-state" id="answer-panel"><div><span class="empty-icon">◎</span><h2>Awaiting investigation</h2><p>Ask a question to retrieve current and documented evidence.</p></div></section>
+          <section class="evidence-panel panel" id="evidence-panel" hidden><div class="panel-title"><div><label>AUDIT TRAIL</label><h2>Supporting Evidence</h2></div><code id="evidence-count">00 SOURCES</code></div><div id="evidence-list"></div></section>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="site-footer"><span>MADAYN LAKEHOUSE POC // COPILOT</span><span>READ-ONLY · CITED · EVIDENCE FIRST</span></div>
+  <script src="copilot.js"></script>
+</body>
+</html>

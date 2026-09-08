@@ -58,6 +58,9 @@ services:
     container_name: lakehouse-portal
     ports:
       - "3000:80"
+    volumes:
+      - ./platform/portal/src:/usr/share/nginx/html:ro
+      - ./platform/portal/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - minio
       - trino

@@ -21,6 +21,8 @@ class CopilotRequest(BaseModel):
 class Citation(BaseModel):
     source_id: str
     title: str
+    component: Component | None = None
+    occurred_at: datetime | None = None
     source_uri: str
     excerpt: str
 

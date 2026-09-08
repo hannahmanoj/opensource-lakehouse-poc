@@ -135,6 +135,8 @@ async def ask(request: CopilotRequest) -> CopilotResponse:
         {
             "source_id": citation_id,
             "title": evidence_by_id[citation_id]["title"],
+            "component": evidence_by_id[citation_id].get("component"),
+            "occurred_at": evidence_by_id[citation_id].get("occurred_at"),
             "source_uri": evidence_by_id[citation_id]["source_uri"],
             "excerpt": evidence_by_id[citation_id]["excerpt"],
         }
