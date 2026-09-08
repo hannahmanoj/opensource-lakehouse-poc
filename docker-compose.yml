@@ -35,6 +35,11 @@ services:
       COPILOT_TRINO_USER: copilot
       COPILOT_MAX_LOG_BYTES: ${COPILOT_MAX_LOG_BYTES:-32768}
       COPILOT_SMALL_FILE_THRESHOLD_BYTES: ${COPILOT_SMALL_FILE_THRESHOLD_BYTES:-134217728}
+      COPILOT_LLM_PROVIDER: ${COPILOT_LLM_PROVIDER:-ollama}
+      COPILOT_LLM_BASE_URL: ${COPILOT_LLM_BASE_URL:-http://host.docker.internal:11434}
+      COPILOT_LLM_MODEL: ${COPILOT_LLM_MODEL:-qwen3:8b}
+      COPILOT_LLM_TEMPERATURE: ${COPILOT_LLM_TEMPERATURE:-0.1}
+      COPILOT_LLM_TIMEOUT_SECONDS: ${COPILOT_LLM_TIMEOUT_SECONDS:-120}
     volumes:
       - ./platform/copilot/api/app:/app/app:ro
       - ./platform/copilot/knowledge:/knowledge:ro

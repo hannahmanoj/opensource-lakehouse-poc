@@ -36,3 +36,26 @@ SMALL_FILE_THRESHOLD_BYTES = int(
         str(128 * 1024 * 1024),
     )
 )
+
+LLM_PROVIDER = os.getenv(
+    "COPILOT_LLM_PROVIDER",
+    "ollama",
+)
+
+LLM_BASE_URL = os.getenv(
+    "COPILOT_LLM_BASE_URL",
+    "http://host.docker.internal:11434",
+)
+
+LLM_MODEL = os.getenv(
+    "COPILOT_LLM_MODEL",
+    "qwen3:8b",
+)
+
+LLM_TEMPERATURE = float(
+    os.getenv("COPILOT_LLM_TEMPERATURE", "0.1")
+)
+
+LLM_TIMEOUT_SECONDS = float(
+    os.getenv("COPILOT_LLM_TIMEOUT_SECONDS", "120")
+)

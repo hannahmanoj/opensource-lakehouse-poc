@@ -57,6 +57,10 @@ class CopilotResponse(BaseModel):
     insufficient_evidence: bool
     missing_evidence: list[str] = Field(default_factory=list)
     citations: list[Citation]
+    findings: list[str] = Field(default_factory=list)
+    recommended_checks: list[str] = Field(
+    default_factory=list
+)
 
 
 class IcebergEvidenceRequest(BaseModel):
@@ -72,3 +76,11 @@ class LiveEvidenceResponse(BaseModel):
         "platform_health",
     ]
     evidence: Any
+
+class GeneratedAnswer(BaseModel):
+    answer: str
+    findings: list[str]
+    recommended_checks: list[str]
+    citation_ids: list[str]
+    confidence: Confidence
+    insufficient_evidence: bool

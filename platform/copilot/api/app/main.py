@@ -8,11 +8,14 @@ from app.collectors.airflow import AirflowCollector
 from app.collectors.iceberg import IcebergCollector
 from app.collectors.platform_health import PlatformHealthCollector
 from app.collectors.trino import TrinoCollector
+from app.llm.factory import get_llm_provider
+from app.llm.prompts import build_messages, validate_citation_ids
 from app.retrieval.hybrid import hybrid_search
 from app.retrieval.sufficiency import evaluate_sufficiency
 from app.schemas import (
     CopilotRequest,
     CopilotResponse,
+    GeneratedAnswer,
     IcebergEvidenceRequest,
     LiveEvidenceResponse,
     SearchResponse,
@@ -57,7 +60,7 @@ def search(request: CopilotRequest) -> SearchResponse:
     "/api/copilot/ask",
     response_model=CopilotResponse,
 )
-def ask(request: CopilotRequest) -> CopilotResponse:
+async def ask(request: CopilotRequest) -> CopilotResponse:
     classification = classify_question(request.question)
 
     results = hybrid_search(
@@ -93,24 +96,64 @@ def ask(request: CopilotRequest) -> CopilotResponse:
             citations=[],
         )
 
+    messages = build_messages(
+        question=request.question,
+        evidence=decision.qualified_evidence,
+    )
+
+    try:
+        provider = get_llm_provider()
+        generated = await provider.generate(
+            messages=messages,
+            response_schema=GeneratedAnswer,
+        )
+        generated = validate_citation_ids(
+            generated,
+            decision.qualified_evidence,
+        )
+    except (httpx.HTTPError, ValueError, KeyError):
+        return CopilotResponse(
+            classification=classification,
+            answer=(
+                "I found sufficient evidence, but the explanation "
+                "model is currently unavailable."
+            ),
+            findings=[],
+            recommended_checks=[],
+            confidence=decision.confidence,
+            insufficient_evidence=False,
+            missing_evidence=[],
+            citations=[],
+        )
+
+    evidence_by_id = {
+        result["source_id"]: result
+        for result in decision.qualified_evidence
+    }
+
+    citations = [
+        {
+            "source_id": citation_id,
+            "title": evidence_by_id[citation_id]["title"],
+            "source_uri": evidence_by_id[citation_id]["source_uri"],
+            "excerpt": evidence_by_id[citation_id]["excerpt"],
+        }
+        for citation_id in generated.citation_ids
+    ]
+
     return CopilotResponse(
         classification=classification,
-        answer=(
-            "The evidence is sufficient for answer generation. "
-            "LLM generation is not connected yet."
+        answer=generated.answer,
+        findings=generated.findings,
+        recommended_checks=generated.recommended_checks,
+        confidence=(
+            "low"
+            if generated.insufficient_evidence
+            else decision.confidence
         ),
-        confidence=decision.confidence,
-        insufficient_evidence=False,
+        insufficient_evidence=generated.insufficient_evidence,
         missing_evidence=[],
-        citations=[
-            {
-                "source_id": result["source_id"],
-                "title": result["title"],
-                "source_uri": result["source_uri"],
-                "excerpt": result["excerpt"],
-            }
-            for result in decision.qualified_evidence
-        ],
+        citations=citations,
     )
 
 
