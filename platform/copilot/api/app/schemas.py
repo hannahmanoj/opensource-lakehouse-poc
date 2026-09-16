@@ -71,11 +71,9 @@ class CopilotResponse(BaseModel):
     default_factory=list
 )
 
-
 class IcebergEvidenceRequest(BaseModel):
     table: str = Field(min_length=1, max_length=300)
     operation: Literal["files", "snapshots", "table_health"]
-
 
 class LiveEvidenceResponse(BaseModel):
     source: Literal[

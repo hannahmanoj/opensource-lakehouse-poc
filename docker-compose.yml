@@ -1,3 +1,4 @@
+#blueprint for running the lakehouse stack
 services:
   copilot-db:
     image: pgvector/pgvector:0.8.6-pg16
