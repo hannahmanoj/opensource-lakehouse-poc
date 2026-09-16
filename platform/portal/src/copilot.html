@@ -3,171 +3,101 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Madayn Lakehouse // Copilot</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="theme-color" content="#0d0d0d" />
+    <title>Copilot · Madayn Data Lakehouse</title>
+    <script src="theme.js?v=20260916-23"></script>
+    <link rel="stylesheet" href="styles.css?v=20260916-24" />
   </head>
-  <body>
-    <header>
-      <a class="brand" href="index.html"
-        ><img src="madayn-logo.png" alt="Madayn logo" /><span
-          >MADAYN<small>DATA LAKEHOUSE PORTAL</small></span
-        ></a
-      >
-      <div class="head-meta">
-        <button
+  <body class="canvas-app copilot-page">
+    <header class="floating-header">
+      <div class="header-left">
+        <a class="canvas-brand" href="index.html#workflow"
+          ><img src="madayn-logo.png" alt="Madayn"
+        /></a>
+        <nav class="workspace-nav">
+          <a href="index.html#services">Services</a
+          ><a href="index.html#data">Data products</a
+          ><a href="index.html#pipelines">Pipelines</a
+          ><a href="index.html#workflow">Workflow</a>
+        </nav>
+      </div>
+      <div class="portal-title"><span>Madayn Data Lakehouse Portal</span></div>
+      <div class="header-right">
+<button
+          class="header-icon"
           id="theme-toggle"
-          class="theme-toggle"
-          type="button"
-          aria-label="Switch to light mode"
-          aria-pressed="false"
+          onclick="toggleMadaynTheme()"
+          aria-label="Toggle contrast"
         >
-          <span>☼</span> LIGHT</button
-        ><span class="env"><i></i> POC / LOCAL</span
-        ><time id="clock">--:--:-- GST</time>
+          ◐
+        </button>
       </div>
     </header>
-    <div class="shell">
-      <aside>
-        <nav>
-          <a href="index.html#overview">01&nbsp; OVERVIEW</a
-          ><a href="index.html#services">02&nbsp; SERVICES</a
-          ><a href="index.html#pipelines">03&nbsp; PIPELINES</a
-          ><a href="index.html#datasets">04&nbsp; DATASETS</a
-          ><a class="selected" href="copilot.html">05&nbsp; COPILOT</a>
-        </nav>
-        <section>
-          <label>ASSISTANT PROFILE</label>
-          <dl>
-            <div>
-              <dt>MODE</dt>
-              <dd>READ-ONLY</dd>
-            </div>
-            <div>
-              <dt>MODEL</dt>
-              <dd>QWEN3 8B</dd>
-            </div>
-            <div>
-              <dt>EVIDENCE</dt>
-              <dd>REQUIRED</dd>
-            </div>
-            <div>
-              <dt>ACTIONS</dt>
-              <dd>DISABLED</dd>
-            </div>
-          </dl>
-        </section>
-      </aside>
-      <main class="copilot-main">
-        <section class="page-head">
-          <div>
-            <label>PLATFORM / COPILOT</label>
-            <h1>Operations Copilot</h1>
-            <p>Evidence-grounded diagnosis for the Madayn lakehouse.</p>
-          </div>
-          <span class="readonly-badge"><i></i> READ-ONLY</span>
-        </section>
-
-        <section class="copilot-layout">
-          <div class="copilot-query panel">
-            <div class="panel-title">
-              <div>
-                <label>INVESTIGATION</label>
-                <h2>Ask a platform question</h2>
-              </div>
-              <code>LIVE + KNOWLEDGE</code>
-            </div>
-            <form id="copilot-form">
-              <label for="question">QUESTION</label>
-              <textarea
-                id="question"
-                name="question"
-                maxlength="1000"
-                required
-                placeholder="What should I check before restarting MinIO?"
-              ></textarea>
-
-              <div class="filter-grid">
-                <div>
-                  <label for="component">COMPONENT</label
-                  ><select id="component">
-                    <option value="">All components</option>
-                    <option value="airflow">Airflow</option>
-                    <option value="spark">Spark</option>
-                    <option value="trino">Trino</option>
-                    <option value="iceberg">Iceberg</option>
-                    <option value="minio">MinIO</option>
-                    <option value="nifi">NiFi</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="severity">SEVERITY</label
-                  ><select id="severity">
-                    <option value="">All severities</option>
-                    <option value="info">Info</option>
-                    <option value="warning">Warning</option>
-                    <option value="error">Error</option>
-                    <option value="critical">Critical</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="from-time">FROM</label
-                  ><input id="from-time" type="datetime-local" />
-                </div>
-                <div>
-                  <label for="to-time">TO</label
-                  ><input id="to-time" type="datetime-local" />
-                </div>
-              </div>
-
-              <button class="ask-button" type="submit">
-                <span>◎</span> ANALYZE EVIDENCE
-              </button>
-            </form>
-
-            <div class="suggestions">
-              <label>SUGGESTED DEMO QUESTIONS</label>
-              <div id="suggested-questions">
-                <button type="button" data-component="spark">
-                  Why did the Spark ingestion fail?</button
-                ><button type="button" data-component="trino">
-                  What does this Trino permission error mean?</button
-                ><button type="button" data-component="iceberg">
-                  Which Iceberg tables have too many small files?</button
-                ><button type="button" data-component="minio">
-                  What should I check before restarting MinIO?
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div id="result-column" class="result-column" aria-live="polite">
-            <section class="answer-panel panel empty-state" id="answer-panel">
-              <div>
-                <span class="empty-icon">◎</span>
-                <h2>Awaiting investigation</h2>
-                <p>
-                  Ask a question to retrieve current and documented evidence.
-                </p>
-              </div>
-            </section>
-            <section class="evidence-panel panel" id="evidence-panel" hidden>
-              <div class="panel-title">
-                <div>
-                  <label>AUDIT TRAIL</label>
-                  <h2>Supporting Evidence</h2>
-                </div>
-                <code id="evidence-count">00 SOURCES</code>
-              </div>
-              <div id="evidence-list"></div>
-            </section>
+    <main class="copilot-main">
+      <div class="chat-head">
+        <div>
+          <h1>Operations Copilot</h1>
+        </div>
+      </div>
+      <div class="chat-scroll" id="chat-scroll">
+        <section class="copilot-empty" id="copilot-empty">
+          <i>✦</i>
+          <h2>What would you like to tackle?</h2>
+          <div class="suggested-prompts" id="suggested-prompts">
+            <button data-component="spark">
+              Why did the latest Spark ingestion fail?</button
+            ><button>Show how data reaches the Gold layer</button
+            ><button>Which services are unhealthy?</button
+            ><button data-component="trino">
+              Why can’t this user access the Iceberg catalog?</button
+            ><button data-component="iceberg">
+              Which tables may have too many small files?
+            </button>
           </div>
         </section>
-      </main>
-    </div>
-    <div class="site-footer">
-      <span>MADAYN LAKEHOUSE POC // COPILOT</span
-      ><span>READ-ONLY · CITED · EVIDENCE FIRST</span>
-    </div>
-    <script src="copilot.js"></script>
+        <div class="conversation" id="conversation"></div>
+      </div>
+      <div class="chat-composer-wrap">
+        <div class="context-panel" id="context-panel" hidden>
+          <label
+            >Component<select id="component">
+              <option value="">All components</option>
+              <option>airflow</option>
+              <option>spark</option>
+              <option>trino</option>
+              <option>iceberg</option>
+              <option>minio</option>
+              <option>nifi</option>
+            </select></label
+          ><label
+            >Severity<select id="severity">
+              <option value="">All severities</option>
+              <option>info</option>
+              <option>warning</option>
+              <option>error</option>
+              <option>critical</option>
+            </select></label
+          ><label>From<input id="from-time" type="datetime-local" /></label
+          ><label>To<input id="to-time" type="datetime-local" /></label>
+        </div>
+        <form class="chat-composer" id="copilot-form">
+          <span>✦</span
+          ><textarea
+            id="question"
+            maxlength="1000"
+            required
+            rows="2"
+            placeholder="Ask Copilot about your lakehouse…"
+          ></textarea
+          ><button id="submit-button" type="submit">↑</button>
+        </form>
+        <div class="composer-footer">
+          <button class="context-button" id="context-button" type="button">
+            ＋ Add context or filters</button
+          ><span>copilot can make mistakes, verify important details</span>
+        </div>
+      </div>
+    </main>
+    <script src="copilot.js?v=20260916-22"></script>
   </body>
 </html>

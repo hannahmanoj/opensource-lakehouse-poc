@@ -3,367 +3,323 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Madayn Lakehouse // Operations</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="theme-color" content="#0d0c11" />
+    <title>Madayn Data Lakehouse Portal</title>
+    <script src="theme.js?v=20260916-23"></script>
+    <link rel="stylesheet" href="styles.css?v=20260916-24" />
   </head>
-  <body>
-    <header>
-      <a class="brand" href="#">
-        <img src="madayn-logo.png" alt="Madayn logo" />
-        <span>MADAYN<small>DATA LAKEHOUSE PORTAL</small> </span>
-      </a>
-      <div class="head-meta">
-        <button
+  <body class="canvas-app">
+    <header class="floating-header">
+      <div class="header-left">
+        <a class="canvas-brand" href="#workflow" aria-label="Madayn home"
+          ><img src="madayn-logo.png" alt="Madayn"
+        /></a>
+        <nav class="workspace-nav" aria-label="Portal views">
+          <a href="#services" data-route="services">Services</a
+          ><a href="#data" data-route="data">Data products</a
+          ><a href="#pipelines" data-route="pipelines">Pipelines</a
+          ><a href="#workflow" data-route="workflow">Workflow</a>
+        </nav>
+      </div>
+      <div class="portal-title"><span>Madayn Data Lakehouse Portal</span></div>
+      <div class="header-right">
+        <button class="health-control" id="global-health">
+          <i class="status-dot checking"></i><span>Checking</span></button
+        ><button
+          class="header-icon"
           id="theme-toggle"
-          class="theme-toggle"
-          type="button"
-          aria-label="Switch to light mode"
-          aria-pressed="false"
+          onclick="toggleMadaynTheme()"
+          aria-label="Toggle canvas contrast"
         >
-          <span>☼</span> LIGHT
-        </button>
-        <span class="env"> <i></i> POC / LOCAL</span>
-        <time id="clock">--:--:-- GST</time>
+          ◐</button
+        ><a class="header-icon" href="copilot.html" title="Open full Copilot"
+          >✦</a
+        >
       </div>
     </header>
-    <div class="shell">
-      <aside>
-        <nav>
-          <a class="selected" href="#overview">01&nbsp; OVERVIEW</a>
-          <a href="#services">02&nbsp; SERVICES</a>
-          <a href="#pipelines">03&nbsp; PIPELINES</a>
-          <a href="#datasets">04&nbsp; DATASETS</a>
-          <a href="copilot.html">05&nbsp; COPILOT</a>
-        </nav>
-        <section>
-          <label>STACK PROFILE</label>
-          <dl>
-            <div>
-              <dt>MODE</dt>
-              <dd>ON-PREM</dd>
-            </div>
-            <div>
-              <dt>FORMAT</dt>
-              <dd>ICEBERG</dd>
-            </div>
-            <div>
-              <dt>STORE</dt>
-              <dd>S3</dd>
-            </div>
-            <div>
-              <dt>ENV</dt>
-              <dd>POC-01</dd>
-            </div>
-          </dl>
-        </section>
-      </aside>
-      <main>
-        <section class="page-head" id="overview">
-          <div>
-            <label>PLATFORM / OVERVIEW</label>
-            <h1>Lakehouse Operations</h1>
-            <p>
-              Unified runtime visibility and access for the Madayn data
-              platform.
-            </p>
-          </div>
-          <button id="refresh">↻&nbsp; REFRESH STATUS</button>
-        </section>
-        <section class="metrics">
-          <div>
-            <label>SERVICES</label>
-            <strong>07</strong>
-            <small>registered</small>
-          </div>
-          <div>
-            <label>CORE HEALTH</label>
-            <strong id="health-count">--/04</strong>
-            <small>responding</small>
-          </div>
-          <div>
-            <label>DATA PRODUCTS</label>
-            <strong>03</strong>
-            <small>published</small>
-          </div>
-          <div>
-            <label>DEPLOYMENT</label>
-            <strong>LOCAL</strong>
-            <small>docker compose</small>
-          </div>
-        </section>
-        <div class="section-head" id="services">
-          <div>
-            <label>RUNTIME</label>
-            <h2>Service Registry</h2>
-          </div>
-          <span> <i></i> LIVE HEALTH ENDPOINT</span>
+
+    <main class="workspace" id="workspace">
+      <section class="workspace-view workflow-view" data-page="workflow">
+        <div class="canvas-stage" id="canvas-stage">
+          <svg class="connections" viewBox="0 0 1600 760" aria-hidden="true">
+            <defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto"
+              >
+                <path d="M0 0L10 5L0 10z" />
+              </marker>
+            </defs>
+            <path d="M230 255C270 255 275 255 315 255" />
+            <path class="active-flow" d="M500 255C540 255 545 255 585 255" />
+            <path d="M835 275C850 275 860 255 875 255" />
+            <path d="M1060 255C1090 255 1100 255 1130 255" />
+            <path d="M1315 255C1340 255 1345 255 1370 255" />
+            <path
+              class="support"
+              d="M405 560V315M405 560C950 560 950 360 950 315M950 575V315M1210 575V315"
+            />
+          </svg>
+          <button
+            class="architecture-node"
+            style="--x: 45px; --y: 205px"
+            data-node="sqlserver"
+          >
+            <i>▣</i
+            ><span><b>SQL Server</b><small>Operational source</small></span
+            ><em data-node-health="sqlserver"></em></button
+          ><button
+            class="architecture-node"
+            style="--x: 315px; --y: 205px"
+            data-node="nifi"
+          >
+            <i class="service-logo"><img src="assets/nifi.webp" alt="" /></i
+            ><span><b>Apache NiFi</b><small>Ingest and route data</small></span
+            ><em data-node-health="nifi"></em></button
+          ><button
+            class="storage-stack"
+            style="--x: 585px; --y: 155px"
+            data-node="minio"
+          >
+            <span class="stack-title"
+              ><i class="stack-logo"><img src="assets/iceberg.png" alt="" /></i
+              ><b>Apache Iceberg</b
+              ><small>Table format over object storage</small></span
+            >
+            <span class="stack-inner"
+              ><i class="service-logo"><img src="assets/minio.png" alt="" /></i
+              ><span
+                ><b>MinIO</b><small>S3-compatible object storage</small></span
+              ><em data-node-health="minio"></em
+            ></span></button
+          ><button
+            class="architecture-node"
+            style="--x: 875px; --y: 205px"
+            data-node="spark"
+          >
+            <i class="service-logo"
+              ><img
+                src="https://spark.apache.org/images/spark-logo-rev.svg"
+                alt=""
+              /></i
+            ><span><b>Apache Spark</b><small>Transform and enrich</small></span
+            ><em data-node-health="spark"></em></button
+          ><button
+            class="architecture-node"
+            style="--x: 1130px; --y: 205px"
+            data-node="trino"
+          >
+            <i class="service-logo"
+              ><img
+                src="https://trino.io/assets/images/trino-logo/cbb.svg"
+                alt=""
+              /></i
+            ><span><b>Trino</b><small>Distributed SQL</small></span
+            ><em data-node-health="trino"></em>
+          </button>
+          <button
+            class="architecture-node"
+            style="--x: 1370px; --y: 205px"
+            data-node="powerbi"
+          >
+            <i class="service-logo"><img src="assets/powerbi.webp" alt="" /></i
+            ><span><b>Power BI</b><small>Business intelligence</small></span
+            ><em class="healthy"></em></button
+          ><button
+            class="architecture-node support-node"
+            style="--x: 315px; --y: 510px"
+            data-node="airflow"
+          >
+            <i class="service-logo"
+              ><img src="assets/Apache-Airflow.png" alt="" /></i
+            ><span
+              ><b>Apache Airflow</b><small>Workflow orchestration</small></span
+            ><em data-node-health="airflow"></em></button
+          ><button
+            class="architecture-node support-node"
+            style="--x: 875px; --y: 525px"
+            data-node="openmetadata"
+          >
+            <i class="service-logo"
+              ><img src="assets/openmetadata.png" alt="" /></i
+            ><span
+              ><b>OpenMetadata</b><small>Governance and lineage</small></span
+            ><em data-node-health="openmetadata"></em></button
+          ><button
+            class="architecture-node copilot-node"
+            style="--x: 1130px; --y: 525px"
+            data-node="copilot"
+          >
+            <i>✦</i
+            ><span
+              ><b>Operations Copilot</b><small>Evidence-based help</small></span
+            ><em data-node-health="copilot"></em>
+          </button>
         </div>
-        <section class="services">
-          <article data-health="minio">
-            <div class="rail">
-              01<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>OBJECT STORAGE</label>
-                  <h3>MinIO</h3>
-                </div>
-                <span class="status checking"> <i></i> Checking</span>
-              </div>
+        <div class="canvas-controls">
+          <button id="zoom-in" title="Zoom in">+</button
+          ><button id="zoom-out" title="Zoom out">−</button
+          >
+        </div>
+      </section>
+
+      <section
+        class="workspace-view collection-view"
+        data-page="services"
+        hidden
+      >
+        <div class="view-heading">
+          <div>
+            <h1>Services & Health</h1>
+            <span
+              >Live health and details. Select a service to inspect
+              it.</span
+            >
+          </div>
+          <button id="refresh-services">↻ Refresh status</button>
+        </div>
+        <div class="view-tools">
+          <label
+            >⌕
+            <input
+              id="service-search"
+              type="search"
+              placeholder="Search services"
+          /></label>
+          <div class="filter-tabs" id="service-filter">
+            <button class="active" data-status="all">All</button
+            ><button data-status="healthy">Healthy</button
+            ><button data-status="offline">Unavailable</button>
+          </div>
+        </div>
+        <div class="service-grid" id="service-list"></div>
+      </section>
+      <section class="workspace-view collection-view" data-page="data" hidden>
+        <div class="view-heading">
+          <div>
+            <h1>Data products</h1>
+            <span>Published Iceberg datasets</span>
+          </div>
+        </div>
+        <div class="product-grid">
+          <button
+            class="product-card"
+            data-dataset="industrial_energy_daily_summary"
+          >
+            <span>Energy</span>
+            <h2>Industrial energy daily summary</h2>
+            <p>
+              Daily energy consumption summaries for reporting and analysis.
+            </p>
+            <small>Owner · Energy data team</small></button
+          ><button class="product-card" data-dataset="taxi_hourly_summary">
+            <span>Transport</span>
+            <h2>Taxi hourly summary</h2>
+            <p>
+              Hourly transport activity summary for the demonstration domain.
+            </p>
+            <small>Owner · Transport data team</small></button
+          ><button class="product-card" data-dataset="genre_summary">
+            <span>Demo</span>
+            <h2>Genre summary</h2>
+            <p>
+              Aggregated artist and genre information for the demo catalogue.
+            </p>
+            <small>Owner · Demo data team</small>
+          </button>
+        </div>
+      </section>
+      <section
+        class="workspace-view collection-view"
+        data-page="pipelines"
+        hidden
+      >
+        <div class="view-heading">
+          <div>
+            <h1>Pipelines</h1>
+            <span
+              >Configured workflows and their path through the platform.</span
+            >
+          </div>
+          <a data-port="8090" data-protocol="http">Open Airflow ↗</a>
+        </div>
+        <article class="pipeline-card">
+          <div>
+            <i>⇢</i
+            ><span
+              ><small>Daily · 06:00 GST</small>
+              <h2>Industrial energy pipeline</h2>
               <p>
-                S3-compatible storage for raw, refined, and curated lakehouse
-                objects.
-              </p>
-              <div class="endpoint">
-                <label>ENDPOINT</label>
-                <code data-port="9001" data-protocol="http">resolving...</code>
-              </div>
-              <footer>
-                <span>TCP :9001</span>
-                <a data-port="9001" data-protocol="http">Launch Console ↗</a>
-              </footer>
-            </div>
-          </article>
-          <article data-health="airflow">
-            <div class="rail">
-              02<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>ORCHESTRATION</label>
-                  <h3>Apache Airflow</h3>
-                </div>
-                <span class="status checking"> <i></i> Checking</span>
-              </div>
-              <p>
-                Schedules, retries, monitors, and audits end-to-end data
-                workflows.
-              </p>
-              <div class="endpoint">
-                <label>ENDPOINT</label>
-                <code data-port="8090" data-protocol="http">resolving...</code>
-              </div>
-              <footer>
-                <span>TCP :8090</span>
-                <a data-port="8090" data-protocol="http">Launch Console ↗</a>
-              </footer>
-            </div>
-          </article>
-          <article data-health="trino">
-            <div class="rail">
-              03<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>DISTRIBUTED SQL</label>
-                  <h3>Trino</h3>
-                </div>
-                <span class="status checking"> <i></i> Checking</span>
-              </div>
-              <p>
-                Federated query engine serving open Iceberg tables to analytics
-                clients.
-              </p>
-              <div class="endpoint">
-                <label>ENDPOINT</label>
-                <code data-port="8080" data-protocol="http">resolving...</code>
-              </div>
-              <footer>
-                <span>TCP :8080</span>
-                <a data-port="8080" data-protocol="http">Launch Console ↗</a>
-              </footer>
-            </div>
-          </article>
-          <article>
-            <div class="rail">
-              04<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>DATA INGESTION</label>
-                  <h3>Apache NiFi</h3>
-                </div>
-                <span class="status secured"> <i></i> Secured</span>
-              </div>
-              <p>
-                Moves operational source data into governed raw storage flows.
-              </p>
-              <div class="endpoint">
-                <label>ENDPOINT</label>
-                <code data-port="8443" data-protocol="https" data-path="/nifi/"
-                  >resolving...</code
-                >
-              </div>
-              <footer>
-                <span>TLS :8443</span>
-                <a data-port="8443" data-protocol="https" data-path="/nifi/"
-                  >Launch Console ↗</a
-                >
-              </footer>
-            </div>
-          </article>
-          <article>
-            <div class="rail">
-              05<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>COMPUTE ENGINE</label>
-                  <h3>Apache Spark</h3>
-                </div>
-                <span class="status active"> <i></i> Active</span>
-              </div>
-              <p>
-                Executes scalable cleaning, enrichment, and aggregation
-                workloads.
-              </p>
-              <div class="endpoint">
-                <label>ENDPOINT</label>
-                <code data-port="8888" data-protocol="http">resolving...</code>
-              </div>
-              <footer>
-                <span>TCP :8888</span>
-                <a data-port="8888" data-protocol="http">Launch Console ↗</a>
-              </footer>
-            </div>
-          </article>
-          <article data-health="openmetadata">
-            <div class="rail">
-              06<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>DATA GOVERNANCE</label>
-                  <h3>OpenMetadata</h3>
-                </div>
-                <span class="status checking"> <i></i> Checking</span>
-              </div>
-              <p>
-                Catalogues ownership, classifications, quality, and end-to-end
-                data lineage.
-              </p>
-              <div class="endpoint">
-                <label>ENDPOINT</label>
-                <code data-port="8585" data-protocol="http">resolving...</code>
-              </div>
-              <footer>
-                <span>TCP :8585</span>
-                <a data-port="8585" data-protocol="http">Launch Console ↗</a>
-              </footer>
-            </div>
-          </article>
-          <article>
-            <div class="rail">
-              07<i></i>
-              <i></i>
-              <i></i>
-            </div>
-            <div class="body">
-              <div class="title">
-                <div>
-                  <label>BUSINESS INTELLIGENCE</label>
-                  <h3>Power BI</h3>
-                </div>
-                <span class="status active"> <i></i> Connected</span>
-              </div>
-              <p>
-                Consumes certified summary datasets through the Trino ODBC
-                interface.
-              </p>
-              <div class="endpoint">
-                <label>CONNECTION</label>
-                <code>DSN=Simba Trino / ODBC 64-bit</code>
-              </div>
-              <footer>
-                <span>WINDOWS VM</span>
-                <em>DESKTOP CLIENT</em>
-              </footer>
-            </div>
-          </article>
-        </section>
-        <section class="lower">
-          <article class="panel" id="pipelines">
-            <div class="panel-title">
-              <div>
-                <label>ORCHESTRATION</label>
-                <h2>Featured Pipeline</h2>
-              </div>
-              <code>DAILY / 06:00 GST</code>
-            </div>
-            <div class="pipeline">
-              <i></i>
-              <span>
-                <b>industrial_energy_lakehouse_pipeline</b>
-                <small>Energy domain · scheduled workflow</small>
-              </span>
-            </div>
-            <ol>
-              <li><b>01</b> GENERATE<small>Source readings</small></li>
-              <li><b>02</b> TRANSFORM<small>Iceberg tables</small></li>
-              <li><b>03</b> VALIDATE<small>Trino checks</small></li>
-            </ol>
+                Generates source readings, transforms them into Iceberg tables,
+                and validates the result through Trino.
+              </p></span
+            >
+          </div>
+          <div class="pipeline-flow">
+            <b>Source readings</b><em>→</em><b>Apache Spark</b><em>→</em
+            ><b>Iceberg table</b><em>→</em><b>Trino validation</b>
+          </div>
+          <footer>
             <a
-              class="outline"
               data-port="8090"
               data-protocol="http"
               data-path="/dags/industrial_energy_lakehouse_pipeline/grid"
-              >Open Pipeline Graph ↗</a
+              >Open pipeline graph ↗</a
             >
-          </article>
-          <article class="panel" id="datasets">
-            <div class="panel-title">
-              <div>
-                <label>CATALOG</label>
-                <h2>Published Datasets</h2>
-              </div>
-              <code>ICEBERG.DEMO</code>
-            </div>
-            <div class="row headings">
-              <span>TABLE</span>
-              <span>DOMAIN</span>
-              <span>STATE</span>
-            </div>
-            <div class="row">
-              <code>industrial_energy_daily_summary</code>
-              <span>ENERGY</span>
-              <b>READY</b>
-            </div>
-            <div class="row">
-              <code>taxi_hourly_summary</code>
-              <span>TRANSPORT</span>
-              <b>READY</b>
-            </div>
-            <div class="row">
-              <code>genre_summary</code>
-              <span>DEMO</span>
-              <b>READY</b>
-            </div>
-          </article>
-        </section>
-      </main>
-    </div>
-    <div class="site-footer">
-      <span>MADAYN LAKEHOUSE POC // BUILD 01</span>
-      <span>OPEN STANDARDS · ON PREMISES · NO VENDOR LOCK-IN</span>
-    </div>
-    <script src="app.js"></script>
+          </footer>
+        </article>
+      </section>
+    </main>
+
+    <form class="floating-copilot" id="quick-copilot-form">
+      <span class="copilot-spark">✦</span
+      ><textarea
+        id="quick-question"
+        rows="1"
+        maxlength="1000"
+        placeholder="Ask Copilot about your lakehouse…"
+        aria-label="Ask Copilot"
+      ></textarea
+      ><button type="button" id="copilot-context" title="Current context">
+        Workflow</button
+      ><button class="send-button" type="submit" aria-label="Send">↑</button>
+    </form>
+    <aside class="detail-panel" id="detail-panel" aria-hidden="true">
+      <header>
+        <div>
+          <small id="detail-category">Service</small>
+          <h2 id="detail-title">Details</h2>
+        </div>
+        <button id="close-detail">×</button>
+      </header>
+      <div id="detail-body"></div>
+      <footer id="detail-actions"></footer>
+    </aside>
+    <aside class="answer-panel" id="answer-panel" aria-hidden="true">
+      <header>
+        <div>
+          <small>Read-only assistant</small>
+          <h2>Operations Copilot</h2>
+        </div>
+        <button id="close-answer">×</button>
+      </header>
+      <div class="answer-thread" id="answer-thread">
+        <div class="copilot-welcome">
+          <i>✦</i>
+          <h3>Ask about the platform</h3>
+          <p>
+            I’ll search available evidence and show you the sources behind the
+            answer.
+          </p>
+        </div>
+      </div>
+      <a href="copilot.html">Open full Copilot workspace →</a>
+    </aside>
+    <script src="app.js?v=20260916-25"></script>
   </body>
 </html>

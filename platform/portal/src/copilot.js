@@ -1,148 +1,138 @@
-const root = document.documentElement,
-  themeButton = document.querySelector("#theme-toggle");
-function setTheme(theme) {
-  root.dataset.theme = theme;
-  const light = theme === "light";
-  themeButton.innerHTML = light
-    ? "<span>◐</span> DARK"
-    : "<span>☼</span> LIGHT";
-  themeButton.setAttribute(
-    "aria-label",
-    light ? "Switch to dark mode" : "Switch to light mode",
-  );
-  themeButton.setAttribute("aria-pressed", String(light));
-}
-setTheme(localStorage.getItem("madayn-theme") || "dark");
-themeButton.onclick = () => {
-  const next = root.dataset.theme === "light" ? "dark" : "light";
-  localStorage.setItem("madayn-theme", next);
-  setTheme(next);
-};
-function clock() {
-  document.querySelector("#clock").textContent =
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Asia/Muscat",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }).format(new Date()) + " GST";
-}
-clock();
-setInterval(clock, 1000);
-
-const form = document.querySelector("#copilot-form"),
-  question = document.querySelector("#question"),
-  answerPanel = document.querySelector("#answer-panel"),
-  evidencePanel = document.querySelector("#evidence-panel"),
-  evidenceList = document.querySelector("#evidence-list"),
-  submitButton = form.querySelector("button[type=submit]");
-document.querySelectorAll("#suggested-questions button").forEach(
-  (button) =>
-    (button.onclick = () => {
-      question.value = button.textContent;
-      document.querySelector("#component").value = button.dataset.component;
-      question.focus();
-    }),
-);
-
+const $ = (s, r = document) => r.querySelector(s),
+  $$ = (s, r = document) => [...r.querySelectorAll(s)];
 function escapeHtml(value = "") {
   const node = document.createElement("div");
   node.textContent = String(value);
   return node.innerHTML;
 }
-function formatDate(value) {
-  if (!value) return "Not timestamped";
-  return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Muscat",
-  }).format(new Date(value));
-}
+const form = $("#copilot-form"),
+  question = $("#question"),
+  conversation = $("#conversation"),
+  empty = $("#copilot-empty"),
+  scroll = $("#chat-scroll"),
+  submit = $("#submit-button");
+$("#context-button").onclick = () =>
+  ($("#context-panel").hidden = !$("#context-panel").hidden);
+$$(`#suggested-prompts button`).forEach(
+  (button) =>
+    (button.onclick = () => {
+      question.value = button.textContent;
+      if (button.dataset.component)
+        $("#component").value = button.dataset.component;
+      question.focus();
+    }),
+);
 function payload() {
   const data = { question: question.value.trim() };
   for (const id of ["component", "severity"]) {
-    const value = document.querySelector(`#${id}`).value;
+    const value = $(`#${id}`).value;
     if (value) data[id] = value;
   }
   for (const [id, key] of [
     ["from-time", "from_time"],
     ["to-time", "to_time"],
   ]) {
-    const value = document.querySelector(`#${id}`).value;
+    const value = $(`#${id}`).value;
     if (value) data[key] = new Date(value).toISOString();
   }
   return data;
 }
-function copyButton(text) {
-  return `<button class="copy-check" type="button" data-copy="${encodeURIComponent(text)}">COPY</button>`;
+function citations(items) {
+  if (!items.length) return "";
+  return `<details class="evidence-disclosure"><summary>View evidence · ${items.length} source${items.length === 1 ? "" : "s"}</summary>${items.map((c, i) => `<article class="citation-card"><strong>${i + 1}. ${escapeHtml(c.title)}</strong><small>${escapeHtml(c.component || "Unspecified")}</small><p>${escapeHtml(c.excerpt)}</p><code>${escapeHtml(c.source_uri)}</code></article>`).join("")}</details>`;
 }
-function renderAnswer(data) {
-  const warning = data.insufficient_evidence
-    ? `<div class="evidence-warning"><b>INSUFFICIENT EVIDENCE</b><span>${escapeHtml((data.missing_evidence || []).join(" · "))}</span></div>`
+function answerHtml(data) {
+  const findings = (data.findings || []).length
+      ? `<section class="response-section" data-stream-section><h4>Likely cause / findings</h4><ul>${data.findings.map(() => `<li data-stream-finding></li>`).join("")}</ul></section>`
+      : "",
+    checks = (data.recommended_checks || []).length
+      ? `<section class="response-section" data-stream-section><h4>Recommended checks</h4><ol>${data.recommended_checks.map(() => `<li data-stream-check></li>`).join("")}</ol></section>`
+      : "";
+  const evidence = (data.citations || []).length
+    ? `<section class="response-section" data-stream-section>${citations(data.citations)}</section>`
     : "";
-  const findings = (data.findings || [])
-    .map((item) => `<li>${escapeHtml(item)}</li>`)
-    .join("");
-  const checks = (data.recommended_checks || [])
-    .map(
-      (item) => `<li><span>${escapeHtml(item)}</span>${copyButton(item)}</li>`,
-    )
-    .join("");
-  answerPanel.className = "answer-panel panel";
-  answerPanel.innerHTML = `${warning}<div class="answer-meta"><span class="classification">${escapeHtml((data.classification || "unknown").replaceAll("_", " "))}</span><span class="confidence ${escapeHtml(data.confidence || "low")}"><i></i>${escapeHtml(data.confidence || "low")} confidence</span></div><label>ASSESSED RESPONSE</label><div class="answer-copy">${escapeHtml(data.answer || "No answer returned.")}</div>${findings ? `<div class="answer-section"><label>FINDINGS</label><ul>${findings}</ul></div>` : ""}${checks ? `<div class="answer-section"><label>RECOMMENDED CHECKS</label><ol class="checks">${checks}</ol></div>` : ""}`;
-  answerPanel.querySelectorAll("[data-copy]").forEach(
-    (button) =>
-      (button.onclick = async () => {
-        await navigator.clipboard.writeText(
-          decodeURIComponent(button.dataset.copy),
-        );
-        button.textContent = "COPIED";
-        setTimeout(() => (button.textContent = "COPY"), 1200);
-      }),
-  );
-  renderEvidence(data.citations || []);
+  return `<div class="message assistant answer-arriving"><div class="answer-meta"><span class="status-badge ${data.insufficient_evidence ? "warning" : "healthy"}"><i></i>${escapeHtml(data.classification.replaceAll("_", " "))}</span><span class="status-badge neutral"><i></i>${escapeHtml(data.confidence)} confidence</span></div><div class="answer-block"><h4>Direct answer</h4><p data-stream-answer></p><div class="answer-followup">${findings}${checks}${evidence}</div></div></div>`;
 }
-function renderEvidence(citations) {
-  evidencePanel.hidden = citations.length === 0;
-  document.querySelector("#evidence-count").textContent =
-    `${String(citations.length).padStart(2, "0")} ${citations.length === 1 ? "SOURCE" : "SOURCES"}`;
-  evidenceList.innerHTML = citations
-    .map(
-      (citation, index) =>
-        `<details class="citation" ${index === 0 ? "open" : ""}><summary><span><b>${String(index + 1).padStart(2, "0")}</b><span><strong>${escapeHtml(citation.title)}</strong><small>${escapeHtml(citation.component || "Unspecified")} · ${escapeHtml(formatDate(citation.occurred_at))}</small></span></span><em>EXPAND</em></summary><div class="citation-body"><label>EXACT PASSAGE</label><blockquote>${escapeHtml(citation.excerpt)}</blockquote><div><label>SOURCE URI / LOG LOCATION</label><code>${escapeHtml(citation.source_uri)}</code></div></div></details>`,
-    )
-    .join("");
+function loadingHtml() {
+  return `<div class="message assistant copilot-thinking" data-loading>
+    <span class="thinking-dots" aria-label="Thinking"><i></i><i></i><i></i></span>
+  </div>`;
 }
-function renderError(message) {
-  answerPanel.className = "answer-panel panel";
-  answerPanel.innerHTML = `<div class="evidence-warning"><b>REQUEST FAILED</b><span>${escapeHtml(message)}</span></div><p class="error-help">No platform action was taken. Check the copilot API and try again.</p>`;
-  evidencePanel.hidden = true;
+function cleanDirectAnswer(value = "") {
+  return String(value)
+    .replace(/\\([*_`#])/g, "$1")
+    .replace(/^\s*#{1,6}\s*Direct answer\s*/i, "")
+    .split(/\n\s*#{1,6}\s*(?:Likely cause|Findings|Recommended checks|View evidence)/i)[0]
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\s{2,}(?=\d+\.\s)/g, "\n\n")
+    .replace(/\s{2,}(?=[-•]\s)/g, "\n")
+    .trim();
 }
-
+function typeInto(target, value, instant = false) {
+  const words = String(value || "").match(/\S+\s*/g) || [];
+  if (instant) {
+    target.textContent = value;
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    let index = 0;
+    const typeNext = () => {
+      target.textContent += words[index++] || "";
+      scroll.scrollTop = scroll.scrollHeight;
+      if (index < words.length) setTimeout(typeNext, 22);
+      else resolve();
+    };
+    typeNext();
+  });
+}
+async function revealAnswer(data) {
+  const answer = $(".answer-arriving:last-child", conversation),
+    target = $("[data-stream-answer]", answer),
+    directAnswer = cleanDirectAnswer(data.answer),
+    instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  answer.classList.add("ready");
+  await typeInto(target, directAnswer, instant);
+  const sections = $$(`[data-stream-section]`, answer);
+  for (const section of sections) {
+    section.classList.add("visible");
+    const findings = $$(`[data-stream-finding]`, section),
+      checks = $$(`[data-stream-check]`, section);
+    for (let index = 0; index < findings.length; index++)
+      await typeInto(findings[index], data.findings[index], instant);
+    for (let index = 0; index < checks.length; index++)
+      await typeInto(checks[index], data.recommended_checks[index], instant);
+  }
+}
 form.onsubmit = async (event) => {
   event.preventDefault();
   if (!question.value.trim()) return;
-  submitButton.disabled = true;
-  submitButton.innerHTML = "<span>◌</span> ANALYZING…";
-  answerPanel.className = "answer-panel panel loading-state";
-  answerPanel.innerHTML =
-    '<div><span class="loader"></span><h2>Reviewing evidence</h2><p>Retrieving sources and checking sufficiency before generation.</p></div>';
-  evidencePanel.hidden = true;
+  const data = payload(),
+    text = question.value.trim();
+  empty.hidden = true;
+  conversation.insertAdjacentHTML(
+    "beforeend",
+    `<div class="message user">${escapeHtml(text)}</div>${loadingHtml()}`,
+  );
+  question.value = "";
+  submit.disabled = true;
+  scroll.scrollTop = scroll.scrollHeight;
   try {
     const response = await fetch("/api/copilot/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload()),
-    });
-    const data = await response.json();
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }),
+      result = await response.json();
     if (!response.ok)
-      throw new Error(data.detail || `Request failed (${response.status})`);
-    renderAnswer(data);
+      throw Error(result.detail || `Request failed (${response.status})`);
+    $(`[data-loading]`).outerHTML = answerHtml(result);
+    requestAnimationFrame(() => revealAnswer(result));
   } catch (error) {
-    renderError(error.message);
+    $(`[data-loading]`).outerHTML =
+      `<div class="message assistant"><div class="chat-message error"><strong>Request failed</strong><p>${escapeHtml(error.message)}</p><small>No platform action was taken.</small></div></div>`;
   } finally {
-    submitButton.disabled = false;
-    submitButton.innerHTML = "<span>◎</span> ANALYZE EVIDENCE";
+    submit.disabled = false;
+    scroll.scrollTop = scroll.scrollHeight;
+    question.focus();
   }
 };
