@@ -1,13 +1,12 @@
 <h1 align="center">on-premises lakehouse + copilot proof of concept</h1>
 
-this repo demonstrates a vendor-neutral, on-premises data lakehouse using
-MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, OpenMetadata and Power BI I designed during my internship
+this project demonstrates a vendor-neutral data lakehouse designed to run entirely on-premises. It combines MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, OpenMetadata, and Power BI to ingest, transform, govern, query, and visualise data. It also includes an operations copilot powered by Ollama and Qwen3 using BGE-M3 embeddings, PostgreSQL w pgvector, and hybrid RAG retrieval to help engineers investigate platform issues.
 
 <h2 align="center">lakehouse operations portal</h2>
 
 <img width="1512" height="828" alt="Screenshot 2026-09-16 at 13 13 37" src="https://github.com/user-attachments/assets/9be583e0-e99a-41e9-9e2c-d0efaef01838" />
 
-<h2 align="center">coplilot using RAG</h2>
+<h2 align="center">copilot using RAG</h2>
 
 <img width="1512" height="823" alt="Screenshot 2026-09-16 at 13 34 49" src="https://github.com/user-attachments/assets/81f8b5b8-849d-4988-b4ca-9f9c578cb428" />
 
@@ -15,6 +14,8 @@ MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, OpenMetadata and
 
 ```text
 data sources (sql server) -> NiFi/airflow -> minIO + iceberg -> spark -> trino -> power bi
+                                    |
+                            ro operations copilot
 ```
 
 - **MinIO** stores raw and curated data on-premises
@@ -25,14 +26,17 @@ data sources (sql server) -> NiFi/airflow -> minIO + iceberg -> spark -> trino -
 - **NiFi** handles bulk ingestion and data movement
 - **Power BI** consumes curated data visualisations through trino
 - **OpenMetaData**  catalogues, describes and classifies data
+- **Operations Copilot** retrieves relevant runbooks and incident evidence,
+  checks selected live platform data, and produces cited, read-only guidance
 
-## repo layout
+<h2 align="center">repo layout</h2>
 
 ```text
 .
 ├── docker-compose.yml             # one-command POC environment
 ├── platform/                      # shared platform config
 │   ├── docker/airflow/
+│   ├── copilot/                    # api, evidence, database migrations and evaluation
 │   ├── nifi/drivers/
 |   ├── portal/                    # lakehouse portal code
 │   └── trino/catalog/
@@ -46,7 +50,7 @@ data sources (sql server) -> NiFi/airflow -> minIO + iceberg -> spark -> trino -
 each domain owns its orchestration, transformation logic, tests, contracts, and
 documentation. shared infrastructure remains under `platform/`.
 
-## to start the POC
+<h2 align="center">to start the POC</h2>
 
 create a local credentials file and replace every `change-me` value before
 starting the services. `.env` is intentionally excluded from git:
@@ -59,11 +63,27 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
+the copilot uses a local Ollama model by default. 
+install ollama on the host and make the configured model available before asking questions:
+
+```bash
+ollama pull qwen3:8b
+```
+
+index the bundled runbooks and incident documents after the first startup (and
+again whenever those documents change):
+
+```bash
+docker compose exec copilot-api python -m app.ingest
+```
+
 service endpoints:
 
 | service | url | credentials |
 |---|---|---|
 | lakehouse portal | http://localhost:3000 | none |
+| operations copilot | http://localhost:3000/copilot.html | none (poc only) |
+| copilot API | http://localhost:8100 | none (poc only) |
 | airflow | http://localhost:8090 | configured in `.env` |
 | trino | http://localhost:8080 | no authentication (poc only) |
 | minIO API | http://localhost:9000 | configured in `.env` |
@@ -71,16 +91,39 @@ service endpoints:
 | nifi | https://localhost:8443 | configured in `.env` |
 | openMetaData | http://localhost:8585 | `admin` / `admin` (poc only) |
 
-the **lakehouse portal** is the recommended entry point for the demo.
-it shows platform health, explains the role of each component, and opens every
-tool without requiring users to remember individual ports
+<h2 align="center">operations copilot using RAG</h2>
 
-### start the governance profile
+the copilot is a local ai assistant that helps find you answers based on evidence.
+A question is classified, matched against indexed knowledge using keyword and semantic retrieval, 
+checked for sufficient evidence, and then sent to the local language model. Answers with findings, recommended checks, and supporting citations. 
+If the evidence is insufficient, the copilot will say so instead of inventing an answer
+
+example questions include:
+
+- `why did the latest Spark ingestion fail?`
+- `why can't this user access the Iceberg catalog?`
+- `which Iceberg tables may have too many small files?`
+- `what should I check before restarting MinIO?`
+
+the copilot can read indexed runbooks and incidents and expose predefined,
+read-only diagnostics for airflow, trino, iceberg, and platform health
+
+check that the api and model are ready with:
+
+```bash
+curl http://localhost:8100/health
+curl http://localhost:11434/api/tags
+```
+
+see [the copilot guide](platform/copilot/README.md) for its architecture, api,
+configuration, evidence format, evaluation commands, and troubleshooting
+
+<h2 align="center">start the governance profile</h2>
 
 openMetaData is optional because its metadata database and search index require
 additional memory
 
- Start it alongside the core platform with:
+start it alongside the core platform with:
 
 ```bash
 docker compose --profile governance up -d openmetadata-server openmetadata-ingestion
