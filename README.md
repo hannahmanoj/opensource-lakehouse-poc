@@ -5,7 +5,7 @@ MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, OpenMetadata and
 
 ### lakehouse operations portal
 
-![lakehouse operations portal](platform/portal/src/portal-snap.png)
+<img width="1512" height="828" alt="Screenshot 2026-09-16 at 13 13 37" src="https://github.com/user-attachments/assets/9be583e0-e99a-41e9-9e2c-d0efaef01838" />
 
 ## architecture
 
