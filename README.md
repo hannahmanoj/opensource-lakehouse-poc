@@ -152,7 +152,7 @@ docker exec trino trino --execute \
 
 or connect via datagrip to debug or see the data clearly:
 
-![trino via datagrip](platform/portal/src/trino_via_datagrip.png)
+<img width="1387" height="873" alt="Screenshot 2026-09-16 at 13 41 57" src="https://github.com/user-attachments/assets/8a764115-6703-4acd-b879-ba39868eaf39" />
 
 see [the industrial-energy domain guide](domains/industrial-energy/README.md)
 for the detailed demo flow.
