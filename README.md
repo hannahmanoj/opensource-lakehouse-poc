@@ -47,13 +47,10 @@ data sources (sql server) -> NiFi/airflow -> minIO + iceberg -> spark -> trino -
 └── data/generated/                # runtime data excluded from git because of size
 ```
 
-each domain owns its orchestration, transformation logic, tests, contracts, and
-documentation. shared infrastructure remains under `platform/`.
+<h2 align="center">how to start the POC</h2>
 
-<h2 align="center">to start the POC</h2>
-
-create a local credentials file and replace every `change-me` value before
-starting the services. `.env` is intentionally excluded from git:
+- create a local credentials file and replace every `change-me` value before
+starting the services:
 
 ```bash
 cp .env.example .env
@@ -63,42 +60,41 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-the copilot uses a local Ollama model by default. 
+- the copilot uses a local Ollama model by default. 
 install ollama on the host and make the configured model available before asking questions:
 
 ```bash
 ollama pull qwen3:8b
 ```
 
-index the bundled runbooks and incident documents after the first startup (and
+- index the bundled runbooks and incident documents after the first startup (and
 again whenever those documents change):
 
 ```bash
 docker compose exec copilot-api python -m app.ingest
 ```
 
-service endpoints:
+<h3 align="center">service endpoints</h3>
 
 | service | url | credentials |
 |---|---|---|
 | lakehouse portal | http://localhost:3000 | none |
-| operations copilot | http://localhost:3000/copilot.html | none (poc only) |
-| copilot API | http://localhost:8100 | none (poc only) |
+| operations copilot | http://localhost:3000/copilot.html | none |
+| copilot API | http://localhost:8100 | none |
 | airflow | http://localhost:8090 | configured in `.env` |
-| trino | http://localhost:8080 | no authentication (poc only) |
+| trino | http://localhost:8080 | no authentication |
 | minIO API | http://localhost:9000 | configured in `.env` |
 | minIO console | http://localhost:9001 | configured in `.env` |
 | nifi | https://localhost:8443 | configured in `.env` |
-| openMetaData | http://localhost:8585 | `admin` / `admin` (poc only) |
+| openMetaData | http://localhost:8585 | `admin` / `admin` |
 
 <h2 align="center">operations copilot using RAG</h2>
 
 the copilot is a local ai assistant that helps find you answers based on evidence.
-A question is classified, matched against indexed knowledge using keyword and semantic retrieval, 
-checked for sufficient evidence, and then sent to the local language model. Answers with findings, recommended checks, and supporting citations. 
+A question is classified, matched against indexed knowledge using keyword and semantic retrieval, checked for sufficient evidence, and then sent to the local language model. Answers with findings, recommended checks, and supporting citations. 
 If the evidence is insufficient, the copilot will say so instead of inventing an answer
 
-example questions include:
+try asking these questions:
 
 - `why did the latest Spark ingestion fail?`
 - `why can't this user access the Iceberg catalog?`
@@ -108,15 +104,14 @@ example questions include:
 the copilot can read indexed runbooks and incidents and expose predefined,
 read-only diagnostics for airflow, trino, iceberg, and platform health
 
-check that the api and model are ready with:
+- check that the api and model are ready with:
 
 ```bash
 curl http://localhost:8100/health
 curl http://localhost:11434/api/tags
 ```
 
-see [the copilot guide](platform/copilot/README.md) for its architecture, api,
-configuration, evidence format, evaluation commands, and troubleshooting
+see [the copilot guide](platform/copilot/README.md) for more about its architecture, api, configuration, evidence format, evaluation commands, and troubleshooting
 
 <h2 align="center">start the governance profile</h2>
 
@@ -134,7 +129,7 @@ elasticsearch images, runs the metadata schema migration, and can take several m
 
 the bundled openMetaData ingestion scheduler runs internally to execute connector tests and metadata ingestion; the poc's existing airflow remains responsible for business DAGs
 
-## demo
+<h2 align="center">demo for the industrial engery pipeline</h2>
 
 the `industrial_energy_lakehouse_pipeline` airflow DAG runs daily at 06:00
 asia/muscat and executes:
