@@ -3,11 +3,15 @@
 this repo demonstrates a vendor-neutral, on-premises data lakehouse using
 MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, OpenMetadata and Power BI I designed during my internship
 
-### lakehouse operations portal
+<h2 align="center">lakehouse operations portal</h2>
 
 <img width="1512" height="828" alt="Screenshot 2026-09-16 at 13 13 37" src="https://github.com/user-attachments/assets/9be583e0-e99a-41e9-9e2c-d0efaef01838" />
 
-## architecture
+<h2 align="center">coplilot using RAG</h2>
+
+<img width="1512" height="823" alt="Screenshot 2026-09-16 at 13 34 49" src="https://github.com/user-attachments/assets/81f8b5b8-849d-4988-b4ca-9f9c578cb428" />
+
+<h2 align="center">architecture</h2>
 
 ```text
 data sources (sql server) -> NiFi/airflow -> minIO + iceberg -> spark -> trino -> power bi
