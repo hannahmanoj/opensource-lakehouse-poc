@@ -1,4 +1,4 @@
-# on-premises lakehouse POC
+<h1 align="center">on-premises lakehouse + copilot proof of concept</h1>
 
 this repo demonstrates a vendor-neutral, on-premises data lakehouse using
 MinIO, Apache Iceberg, Spark, Trino, NiFi, Airflow, SQL Server, OpenMetadata and Power BI I designed during my internship

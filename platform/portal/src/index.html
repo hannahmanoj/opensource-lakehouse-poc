@@ -1,23 +1,28 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Madayn Lakehouse // Operations</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header>
       <a class="brand" href="#">
-        <img src="madayn-logo.png" alt="Madayn logo">
-        <span>MADAYN<small>DATA LAKEHOUSE PORTAL</small>
-        </span>
+        <img src="madayn-logo.png" alt="Madayn logo" />
+        <span>MADAYN<small>DATA LAKEHOUSE PORTAL</small> </span>
       </a>
       <div class="head-meta">
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
-          <span>☼</span> LIGHT</button>
-        <span class="env">
-          <i></i> POC / LOCAL</span>
+        <button
+          id="theme-toggle"
+          class="theme-toggle"
+          type="button"
+          aria-label="Switch to light mode"
+          aria-pressed="false"
+        >
+          <span>☼</span> LIGHT
+        </button>
+        <span class="env"> <i></i> POC / LOCAL</span>
         <time id="clock">--:--:-- GST</time>
       </div>
     </header>
@@ -57,7 +62,10 @@
           <div>
             <label>PLATFORM / OVERVIEW</label>
             <h1>Lakehouse Operations</h1>
-            <p>Unified runtime visibility and access for the Madayn data platform.</p>
+            <p>
+              Unified runtime visibility and access for the Madayn data
+              platform.
+            </p>
           </div>
           <button id="refresh">↻&nbsp; REFRESH STATUS</button>
         </section>
@@ -88,12 +96,12 @@
             <label>RUNTIME</label>
             <h2>Service Registry</h2>
           </div>
-          <span>
-            <i></i> LIVE HEALTH ENDPOINT</span>
+          <span> <i></i> LIVE HEALTH ENDPOINT</span>
         </div>
         <section class="services">
           <article data-health="minio">
-            <div class="rail">01<i></i>
+            <div class="rail">
+              01<i></i>
               <i></i>
               <i></i>
             </div>
@@ -103,10 +111,12 @@
                   <label>OBJECT STORAGE</label>
                   <h3>MinIO</h3>
                 </div>
-                <span class="status checking">
-                  <i></i> Checking</span>
+                <span class="status checking"> <i></i> Checking</span>
               </div>
-              <p>S3-compatible storage for raw, refined, and curated lakehouse objects.</p>
+              <p>
+                S3-compatible storage for raw, refined, and curated lakehouse
+                objects.
+              </p>
               <div class="endpoint">
                 <label>ENDPOINT</label>
                 <code data-port="9001" data-protocol="http">resolving...</code>
@@ -118,7 +128,8 @@
             </div>
           </article>
           <article data-health="airflow">
-            <div class="rail">02<i></i>
+            <div class="rail">
+              02<i></i>
               <i></i>
               <i></i>
             </div>
@@ -128,10 +139,12 @@
                   <label>ORCHESTRATION</label>
                   <h3>Apache Airflow</h3>
                 </div>
-                <span class="status checking">
-                  <i></i> Checking</span>
+                <span class="status checking"> <i></i> Checking</span>
               </div>
-              <p>Schedules, retries, monitors, and audits end-to-end data workflows.</p>
+              <p>
+                Schedules, retries, monitors, and audits end-to-end data
+                workflows.
+              </p>
               <div class="endpoint">
                 <label>ENDPOINT</label>
                 <code data-port="8090" data-protocol="http">resolving...</code>
@@ -143,7 +156,8 @@
             </div>
           </article>
           <article data-health="trino">
-            <div class="rail">03<i></i>
+            <div class="rail">
+              03<i></i>
               <i></i>
               <i></i>
             </div>
@@ -153,10 +167,12 @@
                   <label>DISTRIBUTED SQL</label>
                   <h3>Trino</h3>
                 </div>
-                <span class="status checking">
-                  <i></i> Checking</span>
+                <span class="status checking"> <i></i> Checking</span>
               </div>
-              <p>Federated query engine serving open Iceberg tables to analytics clients.</p>
+              <p>
+                Federated query engine serving open Iceberg tables to analytics
+                clients.
+              </p>
               <div class="endpoint">
                 <label>ENDPOINT</label>
                 <code data-port="8080" data-protocol="http">resolving...</code>
@@ -168,7 +184,8 @@
             </div>
           </article>
           <article>
-            <div class="rail">04<i></i>
+            <div class="rail">
+              04<i></i>
               <i></i>
               <i></i>
             </div>
@@ -178,22 +195,28 @@
                   <label>DATA INGESTION</label>
                   <h3>Apache NiFi</h3>
                 </div>
-                <span class="status secured">
-                  <i></i> Secured</span>
+                <span class="status secured"> <i></i> Secured</span>
               </div>
-              <p>Moves operational source data into governed raw storage flows.</p>
+              <p>
+                Moves operational source data into governed raw storage flows.
+              </p>
               <div class="endpoint">
                 <label>ENDPOINT</label>
-                <code data-port="8443" data-protocol="https" data-path="/nifi/">resolving...</code>
+                <code data-port="8443" data-protocol="https" data-path="/nifi/"
+                  >resolving...</code
+                >
               </div>
               <footer>
                 <span>TLS :8443</span>
-                <a data-port="8443" data-protocol="https" data-path="/nifi/">Launch Console ↗</a>
+                <a data-port="8443" data-protocol="https" data-path="/nifi/"
+                  >Launch Console ↗</a
+                >
               </footer>
             </div>
           </article>
           <article>
-            <div class="rail">05<i></i>
+            <div class="rail">
+              05<i></i>
               <i></i>
               <i></i>
             </div>
@@ -203,10 +226,12 @@
                   <label>COMPUTE ENGINE</label>
                   <h3>Apache Spark</h3>
                 </div>
-                <span class="status active">
-                  <i></i> Active</span>
+                <span class="status active"> <i></i> Active</span>
               </div>
-              <p>Executes scalable cleaning, enrichment, and aggregation workloads.</p>
+              <p>
+                Executes scalable cleaning, enrichment, and aggregation
+                workloads.
+              </p>
               <div class="endpoint">
                 <label>ENDPOINT</label>
                 <code data-port="8888" data-protocol="http">resolving...</code>
@@ -218,7 +243,8 @@
             </div>
           </article>
           <article data-health="openmetadata">
-            <div class="rail">06<i></i>
+            <div class="rail">
+              06<i></i>
               <i></i>
               <i></i>
             </div>
@@ -228,10 +254,12 @@
                   <label>DATA GOVERNANCE</label>
                   <h3>OpenMetadata</h3>
                 </div>
-                <span class="status checking">
-                  <i></i> Checking</span>
+                <span class="status checking"> <i></i> Checking</span>
               </div>
-              <p>Catalogues ownership, classifications, quality, and end-to-end data lineage.</p>
+              <p>
+                Catalogues ownership, classifications, quality, and end-to-end
+                data lineage.
+              </p>
               <div class="endpoint">
                 <label>ENDPOINT</label>
                 <code data-port="8585" data-protocol="http">resolving...</code>
@@ -243,7 +271,8 @@
             </div>
           </article>
           <article>
-            <div class="rail">07<i></i>
+            <div class="rail">
+              07<i></i>
               <i></i>
               <i></i>
             </div>
@@ -253,10 +282,12 @@
                   <label>BUSINESS INTELLIGENCE</label>
                   <h3>Power BI</h3>
                 </div>
-                <span class="status active">
-                  <i></i> Connected</span>
+                <span class="status active"> <i></i> Connected</span>
               </div>
-              <p>Consumes certified summary datasets through the Trino ODBC interface.</p>
+              <p>
+                Consumes certified summary datasets through the Trino ODBC
+                interface.
+              </p>
               <div class="endpoint">
                 <label>CONNECTION</label>
                 <code>DSN=Simba Trino / ODBC 64-bit</code>
@@ -285,17 +316,17 @@
               </span>
             </div>
             <ol>
-              <li>
-                <b>01</b> GENERATE<small>Source readings</small>
-              </li>
-              <li>
-                <b>02</b> TRANSFORM<small>Iceberg tables</small>
-              </li>
-              <li>
-                <b>03</b> VALIDATE<small>Trino checks</small>
-              </li>
+              <li><b>01</b> GENERATE<small>Source readings</small></li>
+              <li><b>02</b> TRANSFORM<small>Iceberg tables</small></li>
+              <li><b>03</b> VALIDATE<small>Trino checks</small></li>
             </ol>
-            <a class="outline" data-port="8090" data-protocol="http" data-path="/dags/industrial_energy_lakehouse_pipeline/grid">Open Pipeline Graph ↗</a>
+            <a
+              class="outline"
+              data-port="8090"
+              data-protocol="http"
+              data-path="/dags/industrial_energy_lakehouse_pipeline/grid"
+              >Open Pipeline Graph ↗</a
+            >
           </article>
           <article class="panel" id="datasets">
             <div class="panel-title">
@@ -333,7 +364,6 @@
       <span>MADAYN LAKEHOUSE POC // BUILD 01</span>
       <span>OPEN STANDARDS · ON PREMISES · NO VENDOR LOCK-IN</span>
     </div>
-    <script src="app.js">
-    </script>
+    <script src="app.js"></script>
   </body>
 </html>
