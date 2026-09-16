@@ -74,19 +74,66 @@ again whenever those documents change):
 docker compose exec copilot-api python -m app.ingest
 ```
 
-<h3 align="center">service endpoints</h3>
+<h3 align="center">Service endpoints</h3>
 
-| service | url | credentials |
-|---|---|---|
-| lakehouse portal | http://localhost:3000 | none |
-| operations copilot | http://localhost:3000/copilot.html | none |
-| copilot API | http://localhost:8100 | none |
-| airflow | http://localhost:8090 | configured in `.env` |
-| trino | http://localhost:8080 | no authentication |
-| minIO API | http://localhost:9000 | configured in `.env` |
-| minIO console | http://localhost:9001 | configured in `.env` |
-| nifi | https://localhost:8443 | configured in `.env` |
-| openMetaData | http://localhost:8585 | `admin` / `admin` |
+<div align="center">
+  <table>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>URL</th>
+        <th>Credentials</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Lakehouse portal</td>
+        <td><a href="http://localhost:3000">http://localhost:3000</a></td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Operations Copilot</td>
+        <td><a href="http://localhost:3000/copilot.html">http://localhost:3000/copilot.html</a></td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Copilot API</td>
+        <td><a href="http://localhost:8100">http://localhost:8100</a></td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Airflow</td>
+        <td><a href="http://localhost:8090">http://localhost:8090</a></td>
+        <td>Configured in <code>.env</code></td>
+      </tr>
+      <tr>
+        <td>Trino</td>
+        <td><a href="http://localhost:8080">http://localhost:8080</a></td>
+        <td>No authentication</td>
+      </tr>
+      <tr>
+        <td>MinIO API</td>
+        <td><a href="http://localhost:9000">http://localhost:9000</a></td>
+        <td>Configured in <code>.env</code></td>
+      </tr>
+      <tr>
+        <td>MinIO console</td>
+        <td><a href="http://localhost:9001">http://localhost:9001</a></td>
+        <td>Configured in <code>.env</code></td>
+      </tr>
+      <tr>
+        <td>NiFi</td>
+        <td><a href="https://localhost:8443">https://localhost:8443</a></td>
+        <td>Configured in <code>.env</code></td>
+      </tr>
+      <tr>
+        <td>OpenMetadata</td>
+        <td><a href="http://localhost:8585">http://localhost:8585</a></td>
+        <td><code>admin</code> / <code>admin</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <h2 align="center">operations copilot using RAG</h2>
 
